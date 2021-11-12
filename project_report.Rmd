@@ -1,0 +1,32 @@
+---
+title: "project_report"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+##Working directory (to be set manually)
+setwd("C:/Users/Rudra Guin/Documents/UMich/Biostatistics_625/biostat625_final_project")
+```
+
+## Preprocessing the data
+
+Before going into analysis and modeling, we first clean up and pre-process the data
+
+```{r}
+data <- read.delim(file = 'clinical.tsv', sep = '\t', header = TRUE)
+data[data == "\'--"] <- "NULL"
+is.na(data) <- data == "NULL"
+data <- data[, colSums(is.na(data)) < nrow(data)]
+```
+
+
+Viewing the unique values of the "vital status" target variable option:
+
+```{r}
+unique(data$vital_status)
+```
+
