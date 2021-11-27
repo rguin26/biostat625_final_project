@@ -12,11 +12,14 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r}
-##Working directory (to be set manually)
-setwd("C:/Users/Rudra Guin/Documents/UMich/Biostatistics_625/biostat625_final_project")
+## Working directory (to be set manually)
+## To ultimately remove
+## setwd("C:/Users/Rudra Guin/Documents/UMich/Biostatistics_625/biostat625_final_project")
 ```
 
-## Preprocessing the data
+# Introduction/Motivation
+
+# Preprocessing the data
 
 Before going into analysis and modeling, we first clean up and pre-process the data
 
@@ -34,3 +37,31 @@ Viewing the unique values of the "vital status" target variable option:
 unique(data$vital_status)
 ```
 
+We decided to use half of the dataset for survival analysis and the other half of the dataset for machine learning modeling and analysis. We split the dataset in half using a random selection of rows for each.
+
+```{r}
+smp_size <- floor(0.5 * nrow(data))
+rand_indexes <- sample(seq_len(nrow(data)), size = smp_size)
+data_subset_1 <- data[rand_indexes,] # for survival analysis
+data_subset_2 <- data[-rand_indexes,] # for machine learning modeling and analysis
+```
+
+# Analysis
+
+## Survival Analysis
+
+We first conducted some survival analysis on the half of the initial preprocessed dataset.
+
+```{r}
+
+```
+
+## Machine Learning Modeling and Analysis
+
+We also performed some machine learning modeling and evaluated the effectiveness of the models' prediction power of the vital status of certain patients.
+
+```{r}
+
+```
+
+# Conclusion
