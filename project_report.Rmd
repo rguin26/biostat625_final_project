@@ -106,7 +106,7 @@ data_subset_2 <- subset(data_subset_2, select = -c(age_is_obfuscated, ajcc_patho
 data_subset_2 <- subset(data_subset_2, select = -c(cause_of_death, year_of_death, days_to_last_known_disease_status, days_to_recurrence, residual_disease, days_to_treatment_end, days_to_treatment_start, initial_disease_status, therapeutic_agents, treatment_intent_type))
 ```
 
-## Data Implementation
+## Data Imputation
 ```{r}
 library(mice)
 data_subset_2_imp <- mice(data_subset_2, m=15, method = "sample")
