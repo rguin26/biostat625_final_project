@@ -129,6 +129,7 @@ We first conducted some survival analysis on the half of the initial preprocesse
 ## Machine Learning Modeling and Analysis
 
 We also performed some machine learning modeling and evaluated the effectiveness of the models' prediction power of the vital status of certain patients.
+
 Random Forest:
 ```{r}
 library(randomForest)
@@ -147,6 +148,33 @@ p1 <- predict(rf, train_rf)
 confusionMatrix(p1, train_rf$vital_status)
 p2 <- predict(rf, test_rf)
 confusionMatrix(p2, test_rf$vital_status)
+```
+
+Neural Network:
+- still in early stages
+```{r}
+library(neuralnet)
+library(caTools)
+library(caret)
+sample <- sample.split(data_subset_rf$vital_status, SplitRatio = .75)
+train_nn <- subset(data_subset_rf, sample == TRUE)
+test_nn  <- subset(data_subset_rf, sample == FALSE)
+
+## https://www.rdocumentation.org/packages/neuralnet/versions/1.44.2/topics/neuralnet
+# Multiclass classification
+# rf <- randomForest(vital_status ~ ., data=train_rf, na.action = na.omit)
+# nn <- neuralnet(Species ~ Petal.Length + Petal.Width, iris, linear.output = FALSE)
+nn <- neuralnet(vital_status ~ ., data = train_nn)
+```
+
+K-Nearest Neighbors (K-NN):
+- still in early stages
+```{r}
+library(class)
+sample <- sample.split(data_subset_rf$vital_status, SplitRatio = .75)
+train_k_nn <- subset(data_subset_rf, sample == TRUE)
+test_k_nn  <- subset(data_subset_rf, sample == FALSE)
+knn(train_k_nn, test_k_nn, cl = 4, k = 25)#, l = 0, prob = FALSE, use.all = TRUE)
 ```
 
 # Conclusion
