@@ -1,8 +1,10 @@
 ---
 title: "project_report"
-output: 
+output:
+  pdf_document:
+    toc: yes
   html_document:
-    toc: true
+    toc: yes
     theme: united
 date: "12/17/2021"
 ---
@@ -12,8 +14,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r}
-## Working directory (to be set manually)
-## To ultimately remove
+## Working directory (to be set manually) - yt ultimately remove
 ## setwd("C:/Users/Rudra Guin/Documents/UMich/Biostatistics_625/biostat625_final_project")
 ```
 
@@ -40,10 +41,10 @@ unique(data$vital_status)
 We decided to use half of the dataset for survival analysis and the other half of the dataset for machine learning modeling and analysis. We split the dataset in half using a random selection of rows for each.
 
 ```{r}
-smp_size <- floor(0.5 * nrow(data))
+smp_size <- floor(0.7 * nrow(data))
 rand_indexes <- sample(seq_len(nrow(data)), size = smp_size)
 data_subset_1 <- data[rand_indexes,] # for survival analysis
-data_subset_2 <- data[-rand_indexes,] # for machine learning modeling and analysis
+#data_subset_2 <- data[-rand_indexes,] # for machine learning modeling and analysis
 ```
 
 ```{r}
