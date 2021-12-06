@@ -1,11 +1,11 @@
 ---
 title: "project_report"
 output:
-  pdf_document:
-    toc: yes
   html_document:
     toc: yes
     theme: united
+  pdf_document:
+    toc: yes
 date: "12/17/2021"
 ---
 
@@ -19,6 +19,10 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 # Introduction/Motivation
+
+For this project, we chose to perform analysis using the Clinical Data Set from the Clinical Package of brain cancer data from the National Cancer Institute (NCI) genomic data portal. The version of the dataset we used was released by October 29, 2021, and it contains 1421 different cases of brain cancer.
+
+We chose this topic because we believed that there would be several large datasets available for us to download and work with for the project. We also believe that our project will be somewhat unique, as we plan to combine two different statistical methodologies.
 
 # Preprocessing the data
 
@@ -108,7 +112,7 @@ data_subset_2 <- subset(data_subset_2, select = -c(cause_of_death, year_of_death
 ```
 
 ## Data Imputation
-```{r}
+```{r, echo=FALSE}
 library(mice)
 data_subset_2_imp <- mice(data_subset_2, m=15, method = "sample")
 data_subset_rf = complete(data_subset_2_imp)
