@@ -1,0 +1,81 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+data1 <- read.delim(file = 'clinical_brain.tsv', sep = '\t', header = TRUE)
+data1[data1 == "\'--"] <- "NULL"
+is.na(data1) <- data1 == "NULL"
+data1 <- data1[, colSums(is.na(data1)) < nrow(data1)]
+
+data2 <- read.delim(file = 'clinical_bone.tsv', sep = '\t', header = TRUE)
+data2[data2 == "\'--"] <- "NULL"
+is.na(data2) <- data2 == "NULL"
+data2 <- data2[, colSums(is.na(data2)) < nrow(data2)]
+```
+
+```{r}
+library(plyr)
+data5 <- rbind.fill(data1, data2)
+
+data5 <- subset(data5, select = -c(case_id, case_submitter_id))
+data5 <- transform(
+  data5,
+  project_id=as.factor(project_id),
+  age_at_index=as.numeric(age_at_index),
+  age_is_obfuscated=as.factor(age_is_obfuscated),
+  cause_of_death=as.factor(cause_of_death),
+  days_to_birth=as.numeric(days_to_birth),
+  days_to_death=as.numeric(days_to_death),
+  ethnicity=as.factor(ethnicity),
+  gender=as.factor(gender),
+  race=as.factor(race),
+  vital_status=as.factor(vital_status),
+  year_of_birth=as.numeric(year_of_birth),
+  year_of_death=as.numeric(year_of_death),
+  age_at_diagnosis=as.numeric(age_at_diagnosis),
+  ajcc_pathologic_stage=as.factor(ajcc_pathologic_stage),
+  ajcc_staging_system_edition=as.factor(ajcc_staging_system_edition),
+  classification_of_tumor=as.factor(classification_of_tumor),
+  days_to_diagnosis=as.numeric(days_to_diagnosis),
+  days_to_last_follow_up=as.numeric(days_to_last_follow_up),
+  days_to_last_known_disease_status=as.numeric(days_to_last_known_disease_status),
+  days_to_recurrence=as.numeric(days_to_recurrence),
+  icd_10_code=as.factor(icd_10_code),
+  last_known_disease_status=as.factor(last_known_disease_status),
+  metastasis_at_diagnosis=as.factor(metastasis_at_diagnosis),
+  morphology=as.factor(morphology),
+  primary_diagnosis=as.factor(primary_diagnosis),
+  prior_malignancy=as.factor(prior_malignancy),
+  prior_treatment=as.factor(prior_treatment),
+  progression_or_recurrence=as.factor(progression_or_recurrence),
+  residual_disease=as.factor(residual_disease),
+  site_of_resection_or_biopsy=as.factor(site_of_resection_or_biopsy),
+  synchronous_malignancy=as.factor(synchronous_malignancy),
+  tissue_or_organ_of_origin=as.factor(tissue_or_organ_of_origin),
+  tumor_grade=as.factor(tumor_grade),
+  year_of_diagnosis=as.numeric(year_of_diagnosis),
+  days_to_treatment_end=as.numeric(days_to_treatment_end),
+  days_to_treatment_start=as.numeric(days_to_treatment_start),
+  initial_disease_status=as.factor(initial_disease_status),
+  therapeutic_agents=as.factor(therapeutic_agents),
+  treatment_anatomic_site=as.factor(treatment_anatomic_site),
+  treatment_intent_type=as.factor(treatment_intent_type),
+  treatment_or_therapy=as.factor(treatment_or_therapy),
+  treatment_outcome=as.factor(treatment_outcome),
+  treatment_type=as.factor(treatment_type)
+  )
+```
+
+```{r}
+library(dplyr)
+data5 <- data5 %>% select(project_id:treatment_type)
+data5[data5=="not reported"] <- NA
+data5[data5=="Not Reported"] <- NA
+data5[data5=="unknown"] <- NA
+data5[data5=="Unknown"] <- NA
+data5[data5=="not allowed to collect"] <- NA
+summary(data5)
+```
+
