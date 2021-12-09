@@ -9,11 +9,22 @@ data <- read.delim(file = 'clinical_bone.tsv', sep = '\t', header = TRUE)
 data[data == "\'--"] <- "NULL"
 is.na(data) <- data == "NULL"
 data <- data[, colSums(is.na(data)) < nrow(data)]
+#names(data)
+```
+
+
+```{r, echo=FALSE}
+data[data=="not reported"] <- NA
+data[data=="Not Reported"] <- NA
+data[data=="unknown"] <- NA
+data[data=="Unknown"] <- NA
+data[data=="not allowed to collect"] <- NA
+#summary(data)
 ```
 
 
 ```{r}
-#names(data)
+rem <- colSums(is.na(data)) > 1000
 ```
 
 
@@ -71,20 +82,6 @@ data <- transform(
 )
 ```
 
-```{r, echo=FALSE}
-data[data=="not reported"] <- NA
-data[data=="Not Reported"] <- NA
-data[data=="unknown"] <- NA
-data[data=="Unknown"] <- NA
-data[data=="not allowed to collect"] <- NA
-#summary(data)
-```
-
-```{r}
-rem <- colSums(is.na(data)) > 1000
-```
-
-
 ```{r}
 data <- subset(data, select = -c(age_is_obfuscated, cause_of_death, days_to_death, year_of_birth, year_of_death, ann_arbor_b_symptoms, ann_arbor_extranodal_involvement, ann_arbor_pathologic_stage, burkitt_lymphoma_clinical_variant, classification_of_tumor, days_to_diagnosis, inss_stage, last_known_disease_status, method_of_diagnosis, prior_malignancy, prior_treatment, progression_or_recurrence, synchronous_malignancy, tumor_grade, year_of_diagnosis, days_to_treatment_end, days_to_treatment_start, initial_disease_status, number_of_cycles, regimen_or_line_of_therapy, therapeutic_agents, treatment_anatomic_site, treatment_dose, treatment_intent_type, treatment_or_therapy, treatment_outcome, treatment_type))
 #summary(data)
@@ -107,7 +104,6 @@ names(data_subset_nn)
 ```
 
 ```{r}
-names(data_subset_nn)
 
 # project_id=as.factor(project_id)                                                <== "factored variable"
 # age_at_index=as.numeric(age_at_index)
@@ -186,16 +182,14 @@ data_subset_nn_nonfactored_vars_mat_scaled <- scale(data_subset_nn_nonfactored_v
 ```{r}
 data_subset_nn_scaled <- cbind(data_subset_nn_nonfactored_vars_mat_scaled, dummies)
 data_subset_nn_scaled <- subset(data_subset_nn_scaled,
-                                select = -c(`vital_status_Dead`,
-                                            `vital_status_Not Reported`,
-                                            `vital_status_Unknown`))
+                                select = -c(`vital_status_Dead`))
 ```
 
 
 
 ```{r}
-smp_size <- floor(0.7 * nrow(data_subset_nn_scaled))
-train_ind <- sample(seq_len(nrow(data_subset_nn_scaled)), size = smp_size)
+train_ind <- sample(seq_len(nrow(data_subset_nn_scaled)),
+                    size = floor(0.7 * nrow(data_subset_nn_scaled)))
 
 train_nn <- data_subset_nn_scaled[train_ind,]
 test_nn <- data_subset_nn_scaled[-train_ind,]
@@ -215,18 +209,12 @@ train_nn_temp <- subset(train_nn, select = -c(1:5))
 
 library(neuralnet)
 
-
-nn <- neuralnet(vital_status_Alive ~ `project_id_BEATAML1.0-COHORT` + `project_id_BEATAML1.0-CRENOLANIB`,
+nn <- neuralnet(vital_status_Alive ~ `project_id_BEATAML1.0-COHORT`,
                 data=train_nn_temp,
                 hidden=c(50, 10),
                 linear.output=FALSE,
                 threshold=0.01)
 
-nn <- neuralnet(vital_status_Alive ~ `project_id_BEATAML1.0-COHORT` + `project_id_BEATAML1.0-CRENOLANIB` + `project_id_CGCI-BLGSP` + `project_id_GENIE-DFCI` + `project_id_GENIE-JHU` + `project_id_GENIE-MDA` + `project_id_GENIE-MSK` + `project_id_GENIE-UHN` + `project_id_GENIE-VICC` + `project_id_MMRF-COMMPASS` + `project_id_OHSU-CNL` + `project_id_TARGET-ALL-P1` + `project_id_TARGET-ALL-P2` + `project_id_TARGET-ALL-P3` + `project_id_TARGET-AML` + `project_id_TARGET-NBL` + `project_id_TCGA-LAML` + `ethnicity_hispanic or latino` + `ethnicity_not allowed to collect` + `ethnicity_not hispanic or latino` + `ethnicity_not reported` + `ethnicity_Unknown` + `gender_female` + `gender_male` + `gender_not reported` + `gender_unknown` + `race_american indian or alaska native` + `race_asian` + `race_black or african american` + `race_native hawaiian or other pacific islander` + `race_not allowed to collect` + `race_not reported` + `race_other` + `race_Unknown` + `race_white` + `iss_stage_I` + `iss_stage_II` + `iss_stage_III` + `iss_stage_Unknown` + `site_of_resection_or_biopsy_Abdomen, NOS` + `site_of_resection_or_biopsy_Blood` + `site_of_resection_or_biopsy_Bone marrow` + `site_of_resection_or_biopsy_Bones of skull and face and associated joints` + `site_of_resection_or_biopsy_Cheek mucosa` + `site_of_resection_or_biopsy_Connective, subcutaneous and other soft tissues of abdomen` + `site_of_resection_or_biopsy_Connective, subcutaneous and other soft tissues, NOS` + `site_of_resection_or_biopsy_Head, face or neck, NOS` + `site_of_resection_or_biopsy_Hematopoietic system, NOS` + `site_of_resection_or_biopsy_Intra-abdominal lymph nodes` + `site_of_resection_or_biopsy_Kidney, NOS` + `site_of_resection_or_biopsy_Lip, NOS` + `site_of_resection_or_biopsy_Liver` + `site_of_resection_or_biopsy_Lower gum` + `site_of_resection_or_biopsy_Lymph nodes of head, face and neck` + `site_of_resection_or_biopsy_Mandible` + `site_of_resection_or_biopsy_Mouth, NOS` + `site_of_resection_or_biopsy_Not Reported` + `site_of_resection_or_biopsy_Ovary` + `site_of_resection_or_biopsy_Pelvis, NOS` + `site_of_resection_or_biopsy_Peritoneum, NOS` + `site_of_resection_or_biopsy_Retroperitoneum` + `site_of_resection_or_biopsy_Small intestine, NOS` + `site_of_resection_or_biopsy_Specified parts of peritoneum` + `site_of_resection_or_biopsy_Spleen` + `site_of_resection_or_biopsy_Testis, NOS` + `site_of_resection_or_biopsy_Unknown` + `site_of_resection_or_biopsy_Vestibule of mouth` + `tissue_or_organ_of_origin_Bone marrow` + `tissue_or_organ_of_origin_Bones of skull and face and associated joints` + `tissue_or_organ_of_origin_Hematopoietic system, NOS` + `tissue_or_organ_of_origin_Orbit, NOS`,
-                data=train_nn_temp,
-                hidden=c(100, 50, 10),
-                linear.output=FALSE,
-                threshold=0.01)
 nn$result.matrix
 plot(nn)
 ```
