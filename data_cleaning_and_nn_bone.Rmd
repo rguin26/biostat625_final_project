@@ -209,7 +209,7 @@ train_nn_temp <- subset(train_nn, select = -c(1:5))
 
 library(neuralnet)
 
-nn <- neuralnet(vital_status_Alive ~ `project_id_BEATAML1.0-COHORT`,
+nn <- neuralnet(vital_status_Alive ~ `project_id_BEATAML1.0-COHORT`,#`project_id_BEATAML1.0-COHORT`,
                 data=train_nn_temp,
                 hidden=c(50, 10),
                 linear.output=FALSE,
