@@ -4,6 +4,18 @@ output:
   pdf_document:
     toc: yes
 ---
+
+
+```{r}
+# Necessary libraries
+library(mice)
+library(fastDummies)
+library(neuralnet)
+library(caret)
+```
+
+
+
 ```{r}
 data <- read.delim(file = 'clinical_bone.tsv', sep = '\t', header = TRUE)
 data[data == "\'--"] <- "NULL"
@@ -89,7 +101,7 @@ data <- subset(data, select = -c(age_is_obfuscated, cause_of_death, days_to_deat
 
 ```{r, echo=FALSE}
 data2 <- data[!is.na(data$vital_status), ]
-library(mice)
+
 data_imp <- mice(data2, m=5, method = "sample", printFlag = FALSE)
 ```
 
@@ -163,7 +175,10 @@ data_subset_nn_nonfactored_vars_mat <- as.matrix(data_subset_nn_nonfactored_vars
 
 
 ```{r}
-library(fastDummies)
+
+
+
+
 dummies <- fastDummies::dummy_cols(data_subset_nn_factored_vars)
 dummies <- subset(dummies, select = -c(1:length(names(data_subset_nn_factored_vars))))
 
@@ -171,34 +186,106 @@ dummies <- subset(dummies, select = -c(1:length(names(data_subset_nn_factored_va
 
 
 ```{r}
-# normalize <- function(x) {
-#   return ((x - min(x)) / (max(x) - min(x)))
-# }
-
-data_subset_nn_nonfactored_vars_mat_scaled <- scale(data_subset_nn_nonfactored_vars_mat)
-
-```
-
-```{r}
-data_subset_nn_scaled <- cbind(data_subset_nn_nonfactored_vars_mat_scaled, dummies)
-data_subset_nn_scaled <- subset(data_subset_nn_scaled,
-                                select = -c(`vital_status_Dead`))
-```
-
-
-
-```{r}
-train_ind <- sample(seq_len(nrow(data_subset_nn_scaled)),
-                    size = floor(0.7 * nrow(data_subset_nn_scaled)))
-
-train_nn <- data_subset_nn_scaled[train_ind,]
-test_nn <- data_subset_nn_scaled[-train_ind,]
+normalize <- function(matrix_x) {
+  n = length(matrix_x[,1])
+  return(apply(matrix_x, 2, rank) / (n + 1))
+}
+data_subset_nn_nonfactored_vars_mat_normalized <- normalize(data_subset_nn_nonfactored_vars_mat)
 ```
 
 
 ```{r}
+data_subset_nn_normalized <- cbind(data_subset_nn_nonfactored_vars_mat_normalized, dummies)
+data_subset_nn_normalized <- subset(data_subset_nn_normalized,
+                                    select = -c(`vital_status_Dead`))
+```
+
+
+```{r}
+names(data_subset_nn_normalized) <- c(
+  "age_at_index",
+  "days_to_birth",
+  "age_at_diagnosis",
+  "days_to_last_follow_up",
+  "days_to_last_known_disease_status",
+  "project_id_BEATAML1.0_COHORT",
+  "project_id_BEATAML1.0_CRENOLANIB",
+  "project_id_CGCI_BLGSP",
+  "project_id_GENIE_DFCI",
+  "project_id_GENIE_JHU",
+  "project_id_GENIE_MDA",
+  "project_id_GENIE_MSK",
+  "project_id_GENIE_UHN",
+  "project_id_GENIE_VICC",
+  "project_id_MMRF_COMMPASS",
+  "project_id_OHSU_CNL",
+  "project_id_TARGET_ALL_P1",
+  "project_id_TARGET_ALL_P2",
+  "project_id_TARGET_ALL_P3",
+  "project_id_TARGET_AML",
+  "project_id_TARGET_NBL",
+  "project_id_TCGA_LAML",
+  "ethnicity_hispanic",
+  "ethnicity_not_hispanic",
+  "gender_female",
+  "gender_male",
+  "race_ameri_ind_or_alaska",
+  "race_asian",
+  "race_black_or_afr_ameri",
+  "race_hawaiian_or_pacific_islander",
+  "race_other",
+  "race_white",
+  "vital_status_Alive",
+  "iss_stage_I",
+  "iss_stage_II",
+  "iss_stage_III",
+  "site_of_resection_or_biopsy_Abdomen_NOS",
+  "site_of_resection_or_biopsy_Blood",
+  "site_of_resection_or_biopsy_Bone_marrow",
+  "site_of_resection_or_biopsy_Bones_of_skull_and_face",
+  "site_of_resection_or_biopsy_Cheek_mucosa",
+  "site_of_resection_or_biopsy_Connective_and_other_soft_tissues",
+  "site_of_resection_or_biopsy_Connective_and_other_soft_tissues_NOS",
+  "site_of_resection_or_biopsy_Head_face_or_neck_NOS",
+  "site_of_resection_or_biopsy_Hematopoietic_system_NOS",
+  "site_of_resection_or_biopsy_Intra_abdominal_lymph_nodes",
+  "site_of_resection_or_biopsy_Kidney_NOS",
+  "site_of_resection_or_biopsy_Lip_NOS",
+  "site_of_resection_or_biopsy_Liver",
+  "site_of_resection_or_biopsy_Lower_gum",
+  "site_of_resection_or_biopsy_Lymph_nodes_of_head_face_neck",
+  "site_of_resection_or_biopsy_Mandible",
+  "site_of_resection_or_biopsy_Mouth_NOS",
+  "site_of_resection_or_biopsy_Ovary",
+  "site_of_resection_or_biopsy_Pelvis_NOS",
+  "site_of_resection_or_biopsy_Peritoneum_NOS",
+  "site_of_resection_or_biopsy_Retroperitoneum",
+  "site_of_resection_or_biopsy_Small_intestine_NOS",
+  "site_of_resection_or_biopsy_Specified_parts_of_peritoneum",
+  "site_of_resection_or_biopsy_Spleen",
+  "site_of_resection_or_biopsy_Testis_NOS",
+  "site_of_resection_or_biopsy_Vestibule_of_mouth",
+  "tissue_or_organ_of_origin_Bone_marrow",
+  "tissue_or_organ_of_origin_Bones_of_skull_and_face",
+  "tissue_or_organ_of_origin_Hematopoietic_system_NOS",
+  "tissue_or_organ_of_origin_Orbit_NOS"
+)
+
+
+```
+
+
+
+```{r}
+train_ind <- sample(seq_len(nrow(data_subset_nn_normalized)),
+                    size = floor(0.7 * nrow(data_subset_nn_normalized)))
+
+train_nn <- data_subset_nn_normalized[train_ind,]
+test_nn <- data_subset_nn_normalized[-train_ind,]
+
 # Temporarily removing numeric variables
 train_nn_temp <- subset(train_nn, select = -c(1:5))
+test_nn_temp <- subset(test_nn, select = -c(1:5))
 ```
 
 
@@ -207,33 +294,34 @@ train_nn_temp <- subset(train_nn, select = -c(1:5))
 ## (https://datascienceplus.com/neuralnet-train-and-test-neural-networks-using-r/)
 ## (http://uc-r.github.io/ann_classification)
 
-library(neuralnet)
-
-nn <- neuralnet(vital_status_Alive ~ `project_id_BEATAML1.0-COHORT`,#`project_id_BEATAML1.0-COHORT`,
+# Making the neural network model
+nn <- neuralnet(vital_status_Alive ~ project_id_BEATAML1.0_COHORT + project_id_BEATAML1.0_CRENOLANIB + project_id_CGCI_BLGSP + project_id_GENIE_DFCI + project_id_GENIE_JHU + project_id_GENIE_MDA + project_id_GENIE_MSK + project_id_GENIE_UHN + project_id_GENIE_VICC + project_id_MMRF_COMMPASS +  project_id_OHSU_CNL + project_id_TARGET_ALL_P1 + project_id_TARGET_ALL_P2 + project_id_TARGET_ALL_P3 + project_id_TARGET_AML + project_id_TARGET_NBL + project_id_TCGA_LAML + ethnicity_hispanic + ethnicity_not_hispanic + gender_female + gender_male + race_ameri_ind_or_alaska + race_asian +  race_black_or_afr_ameri + race_hawaiian_or_pacific_islander + race_other + race_white + iss_stage_I + iss_stage_II + iss_stage_III + site_of_resection_or_biopsy_Abdomen_NOS + site_of_resection_or_biopsy_Blood + site_of_resection_or_biopsy_Bone_marrow + site_of_resection_or_biopsy_Bones_of_skull_and_face + site_of_resection_or_biopsy_Cheek_mucosa + site_of_resection_or_biopsy_Connective_and_other_soft_tissues + site_of_resection_or_biopsy_Connective_and_other_soft_tissues_NOS + site_of_resection_or_biopsy_Head_face_or_neck_NOS + site_of_resection_or_biopsy_Hematopoietic_system_NOS + site_of_resection_or_biopsy_Intra_abdominal_lymph_nodes + site_of_resection_or_biopsy_Kidney_NOS + site_of_resection_or_biopsy_Lip_NOS + site_of_resection_or_biopsy_Liver + site_of_resection_or_biopsy_Lower_gum + site_of_resection_or_biopsy_Lymph_nodes_of_head_face_neck + site_of_resection_or_biopsy_Mandible + site_of_resection_or_biopsy_Mouth_NOS + site_of_resection_or_biopsy_Ovary + site_of_resection_or_biopsy_Pelvis_NOS + site_of_resection_or_biopsy_Peritoneum_NOS + site_of_resection_or_biopsy_Retroperitoneum + site_of_resection_or_biopsy_Small_intestine_NOS + site_of_resection_or_biopsy_Specified_parts_of_peritoneum + site_of_resection_or_biopsy_Spleen + site_of_resection_or_biopsy_Testis_NOS + site_of_resection_or_biopsy_Vestibule_of_mouth + tissue_or_organ_of_origin_Bone_marrow + tissue_or_organ_of_origin_Bones_of_skull_and_face + tissue_or_organ_of_origin_Hematopoietic_system_NOS + tissue_or_organ_of_origin_Orbit_NOS,
                 data=train_nn_temp,
-                hidden=c(50, 10),
+                hidden=c(50, 10),#c(50, 10),
                 linear.output=FALSE,
                 threshold=0.01)
 
-nn$result.matrix
 plot(nn)
 ```
 
 
-
 ```{r}
-results <- data.frame(actual = test_nn$vital_status_Alive, prediction = nn.results$net.result)
-results
+nn$result.matrix
 ```
 
 
 
-
 ```{r}
-# p1 <- predict(rf, train_rf)
-# confusionMatrix(p1, train_rf$vital_status)
-# p2 <- predict(rf, test_rf)
-# confusionMatrix(p2, test_rf$vital_status)
-```
+# Testing the resulting output
+prediction_threshold <- 0.5
+nn.results <- compute(nn, test_nn_temp)
 
+prediction <- nn.results$net.result
+prediction[prediction >= prediction_threshold] <- 1
+prediction[prediction < prediction_threshold] <- 0
+prediction <- c(prediction)
+actual <- test_nn$vital_status_Alive
+
+confusionMatrix(factor(prediction), factor(actual))
+```
 
