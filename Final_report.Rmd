@@ -162,6 +162,8 @@ test_rf$vital_status <- factor(test_rf$vital_status)
 rf <- randomForest(vital_status ~ ., data=train_rf, na.action = na.omit)
 ```
 
+The following plots represent the error of the model error associated with number of trees used, as well as the importance of the different predictor variables used.
+
 ```{r, echo=FALSE}
 plot(rf, main = "Random Forest")
 varImpPlot(rf, main = "Importance of the Variables")
@@ -187,6 +189,8 @@ data_subset_nn <- complete(data_imp)
 data_subset_nn <- subset(data_subset_nn, select = -c(morphology, primary_diagnosis))
 #names(data_subset_nn)
 ```
+
+The neural network model utilized the same predictor variables as the random forest model. However, further data processing was conducted on the dataset as dummy variables were created for each categorical feature.
 
 
 ```{r, echo=FALSE}
@@ -379,6 +383,6 @@ confusionMatrix(factor(test_prediction), factor(test_actual))
 
 Yitian:
 
-Rudra: worked on initial data preprocessing, by converting empty values to `NA`, and then did further preprocessing of the data for the neural network model.
+Rudra: worked on initial data preprocessing by converting empty values to `NA`, and then did further preprocessing of the data for the neural network model.
 
 Jorge:
