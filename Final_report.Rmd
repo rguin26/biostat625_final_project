@@ -15,11 +15,6 @@ fontsize: 12pt
 knitr::opts_chunk$set(echo = TRUE, warning = FALSE)
 ```
 
-```{r}
-## Working directory (to be set manually) - yt ultimately remove
-## setwd("C:/Users/Rudra Guin/Documents/UMich/Biostatistics_625/biostat625_final_project")
-```
-
 # Introduction
 
 For this project, our group chose to perform statistical analysis using the Clinical Data Set from the Clinical Package of bone marrow cancer data. It was collected from the National Cancer Institute (NCI) genomic data portal. The version of the dataset we used was released by October 29, 2021. The bone marrow cancer can damage the bones, immune system, kidneys, and red blood cell count. The dataset contains 16,029 different cases of bone marrow cancer. We planned on using it for survival analysis and machine learning methodologies.
@@ -29,7 +24,7 @@ The dataset contains 47 clinical variables. At the beginning, we tried to includ
 
 # Data Preprocessing
 
-The initial dataset has several missing values among the different features. So, before going into analysis and modeling, we first clean up and pre-process the data. First, we remove all the observations that have missing values for vital status, because vital status is the one we wish to forecast or predict. Then, we decided to remove variables with more than 8,000 missing values. Because it means that more than half of the observations in these variables were missing, which we believe will cause too much inaccuracy after data imputation. After that, we used mice() to impute those missing values. The mice package implements a method to deal with missing data and it generates Multivariate Imputations by Chained Equations. And finally, we randomly split the dataset into two where the training set contains 70% of the data, and the test set contains the rest 30% of the data.
+The initial dataset contains several missing values among the different features. So, before going into analysis and modeling, we first clean up and pre-process the data. First, we remove all the observations that have missing values for vital status, because vital status is the one we wish to forecast or predict. Then, we decided to remove variables with more than 8,000 missing values. Because it means that more than half of the observations in these variables were missing, which we believe will cause too much inaccuracy after data imputation. After that, we used mice() to impute those missing values. The mice package implements a method to deal with missing data and it generates Multivariate Imputations by Chained Equations. And finally, we randomly split the dataset into two where the training set contains 70% of the data, and the test set contains the rest 30% of the data.
 
 ```{r, echo=FALSE}
 # Necessary libraries
@@ -146,8 +141,9 @@ We first conducted some survival analysis
 
 ## Machine Learning Modeling and Analysis
 
-We also performed some machine learning modeling and evaluated the effectiveness of the models' prediction power of the vital status of certain patients.
+We also performed some machine learning modeling and evaluated the effectiveness of the models' prediction power of the vital status of certain patients. We implemented a random forest model and a neural network model.
 
+### Random Forest
 
 ```{r, echo=FALSE}
 # Random Forest:
@@ -171,8 +167,9 @@ plot(rf, main = "Random Forest")
 varImpPlot(rf, main = "Importance of the Variables")
 ```
 
+The following displays a confusion matrix for the predictions on the training set as well as the testing set.
 
-```{r}
+```{r, echo=FALSE}
 # Results:
 p1 <- predict(rf, train_rf)
 confusionMatrix(p1, train_rf$vital_status)
@@ -180,42 +177,15 @@ p2 <- predict(rf, test_rf)
 confusionMatrix(p2, test_rf$vital_status)
 ```
 
+### Neural Network
 
 ```{r, echo=FALSE}
-# Neural Network
+# Neural Network:
+
 data_subset_nn <- complete(data_imp)
 #summary(data_subset_nn)
 data_subset_nn <- subset(data_subset_nn, select = -c(morphology, primary_diagnosis))
 #names(data_subset_nn)
-```
-
-
-```{r, echo=FALSE}
-# project_id=as.factor(project_id)                                                <== "factored variable"
-# age_at_index=as.numeric(age_at_index)
-# days_to_birth=as.numeric(days_to_birth)
-# ethnicity=as.factor(ethnicity)                                                  <== "factored variable"
-# gender=as.factor(gender)                                                        <== "factored variable"
-# race=as.factor(race)                                                            <== "factored variable"
-# vital_status=as.factor(vital_status)                                            <== "factored variable"
-# age_at_diagnosis=as.numeric(age_at_diagnosis)
-# days_to_last_follow_up=as.numeric(days_to_last_follow_up)
-# days_to_last_known_disease_status=as.numeric(days_to_last_known_disease_status)
-# iss_stage=as.factor(iss_stage)                                                  <== "factored variable"
-# site_of_resection_or_biopsy=as.factor(site_of_resection_or_biopsy)              <== "factored variable"
-# tissue_or_organ_of_origin=as.factor(tissue_or_organ_of_origin)                  <== "factored variable"
-```
-
-
-```{r, echo=FALSE}
-unique(data_subset_nn$project_id)
-unique(data_subset_nn$ethnicity)
-unique(data_subset_nn$gender)
-unique(data_subset_nn$race)
-unique(data_subset_nn$vital_status)
-unique(data_subset_nn$iss_stage)
-unique(data_subset_nn$site_of_resection_or_biopsy)
-unique(data_subset_nn$tissue_or_organ_of_origin)
 ```
 
 
@@ -355,7 +325,7 @@ test_nn_temp <- subset(test_nn, select = -c(1:5))
 ```
 
 
-```{r}
+```{r, echo=FALSE}
 ## Neural Network
 ## (https://datascienceplus.com/neuralnet-train-and-test-neural-networks-using-r/)
 ## (http://uc-r.github.io/ann_classification)
