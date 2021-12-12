@@ -240,6 +240,7 @@ data_subset_nn_normalized <- subset(data_subset_nn_normalized,
 
 
 ```{r, echo=FALSE}
+# Renaming certain dummy-variable columns to use for the neural network model
 names(data_subset_nn_normalized) <- c(
   "age_at_index",
   "days_to_birth",
@@ -335,31 +336,49 @@ nn <- neuralnet(vital_status_Alive ~ project_id_BEATAML1.0_COHORT + project_id_B
                 data=train_nn_temp,
                 hidden=c(50, 10),#c(50, 10),
                 linear.output=FALSE,
-                threshold=0.01)
-
-plot(nn)
+                threshold=0.001)
 ```
 
 
 ```{r, echo=FALSE}
-nn$result.matrix
+# nn$result.matrix
+plot(nn)
 ```
 
 ```{r, echo=FALSE}
 # Testing the resulting output
 prediction_threshold <- 0.5
-nn.results <- compute(nn, test_nn_temp)
+nn_train_results <- compute(nn, train_nn_temp)
+nn_test_results <- compute(nn, test_nn_temp)
 
-prediction <- nn.results$net.result
-prediction[prediction >= prediction_threshold] <- 1
-prediction[prediction < prediction_threshold] <- 0
-prediction <- c(prediction)
-actual <- test_nn$vital_status_Alive
+train_prediction <- nn_train_results$net.result
+train_prediction[train_prediction >= prediction_threshold] <- 1
+train_prediction[train_prediction < prediction_threshold] <- 0
+train_prediction <- c(train_prediction)
+train_actual <- train_nn$vital_status_Alive
 
-confusionMatrix(factor(prediction), factor(actual))
+test_prediction <- nn_test_results$net.result
+test_prediction[test_prediction >= prediction_threshold] <- 1
+test_prediction[test_prediction < prediction_threshold] <- 0
+test_prediction <- c(test_prediction)
+test_actual <- test_nn$vital_status_Alive
+
+# Training set predictions
+confusionMatrix(factor(train_prediction), factor(train_actual))
+# Testing set predictions
+confusionMatrix(factor(test_prediction), factor(test_actual))
 ```
 
 # Results
 
 
 # Conclusion
+
+
+# Division of Work:
+
+Yitian:
+
+Rudra: worked on initial data preprocessing, by converting empty values to `NA`, and then did further preprocessing of the data for the neural network model.
+
+Jorge:
