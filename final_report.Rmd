@@ -20,6 +20,7 @@ knitr::opts_chunk$set(echo = TRUE, warning = FALSE)
 For this project, our group chose to perform statistical analysis using the Clinical Data Set from the Clinical Package of bone marrow cancer data. It was collected from the National Cancer Institute (NCI) genomic data portal. The version of the dataset we used was released by October 29, 2021. The bone marrow cancer can damage the bones, immune system, kidneys, and red blood cell count. The dataset contains 16,029 different cases of bone marrow cancer. We planned on using it for survival analysis and machine learning methodologies.
 
 # Data Description
+
 The dataset contains 47 clinical variables. At the beginning, we tried to include the biospecimen data in order to increase the dimension of our dataset, but we found that most of those genomics data were missing, which would not provide us too much help. So, we decided to stick with the clinical data of bone marrow. Vital status means whether the patients were alive or dead at the time the data were collected. Our dataset contains 9,036 alive cases and 3,551 dead cases. Others were either missing or recorded as "unknown" or "not reported".
 
 # Data Preprocessing
@@ -123,7 +124,7 @@ data2 <- subset(data2, select = -c(age_is_obfuscated, cause_of_death, days_to_de
 # summary(data)
 ```
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, message=FALSE}
 # Impute missing values
 data_imp <- mice(data2, m=5, method = "sample", printFlag = FALSE)
 ```
@@ -371,7 +372,9 @@ confusionMatrix(factor(test_prediction), factor(test_actual))
 # Results
 
 
+
 # Conclusion
+
 
 
 # Division of Work:
