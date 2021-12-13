@@ -2,7 +2,8 @@
 title: "Survival Analysis and Machine Learning Methodologies for Bone Marrow Cancer"
 output:
   pdf_document:
-    toc: yes
+    fig_width: 5.5
+    fig_height: 3.5
   html_document:
     toc: yes
     theme: united
