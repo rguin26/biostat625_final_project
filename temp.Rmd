@@ -6,6 +6,7 @@ output:
   html_document:
     toc: yes
     theme: united
+header-includes: \usepackage{setspace}\doublespacing
 author: Yitian Cai, Rudra Guin, Jorge Portugal
 date: "12/17/2021"
 fontsize: 12pt
@@ -15,7 +16,7 @@ fontsize: 12pt
 knitr::opts_chunk$set(echo = TRUE, warning = FALSE)
 ```
 
-```{r}
+```{r, echo=FALSE}
 ## Working directory (to be set manually) - yt ultimately remove
 ## setwd("C:/Users/Rudra Guin/Documents/UMich/Biostatistics_625/biostat625_final_project")
 ```
@@ -31,7 +32,7 @@ The dataset contains 47 clinical variables. At the beginning, we tried to includ
 
 The initial dataset has several missing values among the different features. So, before going into analysis and modeling, we first clean up and pre-process the data. First, we remove all the observations that have missing values for vital status, because vital status is the one we wish to forecast or predict. Then, we decided to remove variables with more than 8,000 missing values. Because it means that more than half of the observations in these variables were missing, which we believe will cause too much inaccuracy after data imputation. After that, we used mice() to impute those missing values. The mice package implements a method to deal with missing data and it generates Multivariate Imputations by Chained Equations. And finally, we randomly split the dataset into two where the training set contains 70% of the data, and the test set contains the rest 30% of the data.
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, warning=FALSE}
 # Necessary libraries
 library(mice)
 library(fastDummies)
@@ -167,15 +168,22 @@ rf <- randomForest(vital_status ~ ., data=train_rf, na.action = na.omit)
 ```
 
 ```{r, echo=FALSE}
-plot(rf, main = "Random Forest")
-varImpPlot(rf, main = "Importance of the Variables")
+plot(rf, main = "Random Forest", xlim = range(0, 150))
+```
+
+```{r, echo=FALSE}
+rf2 <- randomForest(vital_status ~ ., data=train_rf, na.action = na.omit, ntree = 20)
+varImpPlot(rf2, main = "Importance of the Variables")
 ```
 
 
-```{r}
+
+```{r, echo=FALSE}
 # Results:
-p1 <- predict(rf, train_rf)
+p1 <- predict(rf2, train_rf)
 confusionMatrix(p1, train_rf$vital_status)
-p2 <- predict(rf, test_rf)
+p2 <- predict(rf2, test_rf)
 confusionMatrix(p2, test_rf$vital_status)
 ```
+
+
