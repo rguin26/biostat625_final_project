@@ -179,7 +179,7 @@ varImpPlot(rf2, main = "Importance of the Variables")
 ```
 
 
-```{r}
+```{r, echo=FALSE}
 # Results:
 p1 <- predict(rf2, train_rf)
 confusionMatrix(p1, train_rf$vital_status)
@@ -233,16 +233,22 @@ dummies <- subset(dummies, select = -c(1:length(names(data_subset_nn_factored_va
 
 
 ```{r, echo=FALSE}
-normalize <- function(matrix_x) {
-  n = length(matrix_x[,1])
-  return(apply(matrix_x, 2, rank) / (n + 1))
+p_rank<-function(x){
+  r <- rank(x) / sum(!is.na(x))
+  r[is.na(x)] <- NA
+  return(r)
 }
-data_subset_nn_nonfactored_vars_mat_normalized <- normalize(data_subset_nn_nonfactored_vars_mat)
+
+nn_nonfactored_vars_mat_normalized <- as.data.frame(
+  apply(
+    data_subset_nn_nonfactored_vars_mat, 2, p_rank
+  )
+)
 ```
 
 
 ```{r, echo=FALSE}
-data_subset_nn_normalized <- cbind(data_subset_nn_nonfactored_vars_mat_normalized, dummies)
+data_subset_nn_normalized <- cbind(nn_nonfactored_vars_mat_normalized, dummies)
 data_subset_nn_normalized <- subset(data_subset_nn_normalized,
                                     select = -c(`vital_status_Dead`))
 ```
