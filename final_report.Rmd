@@ -26,7 +26,7 @@ The dataset contains 47 clinical variables. At the beginning, we tried to includ
 
 The initial dataset contains several missing values among the different features. So, before going into analysis and modeling, we first clean up and pre-process the data. First, we remove all the observations that have missing values for vital status, because vital status is the one we wish to forecast or predict. Then, we decided to remove variables with more than 8,000 missing values. Because it means that more than half of the observations in these variables were missing, which we believe will cause too much inaccuracy after data imputation. After that, we used mice() to impute those missing values. The mice package implements a method to deal with missing data and it generates Multivariate Imputations by Chained Equations. And finally, we randomly split the dataset into two where the training set contains 70% of the data, and the test set contains the rest 30% of the data.
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, message=FALSE}
 # Necessary libraries
 library(mice)
 library(fastDummies)
@@ -346,7 +346,7 @@ nn <- neuralnet(vital_status_Alive ~ project_id_BEATAML1.0_COHORT + project_id_B
 
 ```{r, echo=FALSE}
 # nn$result.matrix
-plot(nn)
+# plot(nn)
 ```
 
 ```{r, echo=FALSE}
