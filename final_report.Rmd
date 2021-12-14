@@ -190,16 +190,15 @@ confusionMatrix(p2, test_rf$vital_status)
 ### Neural Network
 
 ```{r, echo=FALSE}
-# Neural Network
+# Neural Network:
+
 data_subset_nn <- complete(data_imp)
-#summary(data_subset_nn)
 data_subset_nn <- subset(data_subset_nn, select = -c(morphology, primary_diagnosis))
-#names(data_subset_nn)
 ```
 
 
 ```{r, echo=FALSE}
-# Factored variables in 'data_subset_nn'
+# Getting subset of factored variables in 'data_subset_nn'
 data_subset_nn_factored_vars <- subset(data_subset_nn,
                                        select = c(project_id,
                                                   ethnicity,
@@ -211,7 +210,7 @@ data_subset_nn_factored_vars <- subset(data_subset_nn,
                                                   tissue_or_organ_of_origin))
 data_subset_nn_factored_vars_mat <- as.matrix(data_subset_nn_factored_vars)
 
-# Non-factored variables in 'data_subset_nn'
+# Getting subset of non-factored variables in 'data_subset_nn'
 data_subset_nn_nonfactored_vars <- subset(data_subset_nn,
                                           select = -c(project_id,
                                                       ethnicity,
@@ -227,27 +226,31 @@ data_subset_nn_nonfactored_vars_mat <- as.matrix(data_subset_nn_nonfactored_vars
 
 
 ```{r, echo=FALSE}
+# Getting dummy variables of each categorical feature
 dummies <- fastDummies::dummy_cols(data_subset_nn_factored_vars)
 dummies <- subset(dummies, select = -c(1:length(names(data_subset_nn_factored_vars))))
 ```
 
 
 ```{r, echo=FALSE}
-p_rank<-function(x){
+# Normalization function for numerical variables, with missing values being ignored
+normalize <- function(x){
   r <- rank(x) / sum(!is.na(x))
   r[is.na(x)] <- NA
   return(r)
 }
 
+# Getting normalized numerical variables, ignoring missing values
 nn_nonfactored_vars_mat_normalized <- as.data.frame(
   apply(
-    data_subset_nn_nonfactored_vars_mat, 2, p_rank
+    data_subset_nn_nonfactored_vars_mat, 2, normalize
   )
 )
 ```
 
 
 ```{r, echo=FALSE}
+# Combineing normalized numerical variables and categorical dummy variables
 data_subset_nn_normalized <- cbind(nn_nonfactored_vars_mat_normalized, dummies)
 data_subset_nn_normalized <- subset(data_subset_nn_normalized,
                                     select = -c(`vital_status_Dead`))
@@ -255,6 +258,7 @@ data_subset_nn_normalized <- subset(data_subset_nn_normalized,
 
 
 ```{r, echo=FALSE}
+# Renaming variable names for use in training the neural network model, by using underscores instead of spaces and hyphens
 names(data_subset_nn_normalized) <- c(
   "age_at_index",
   "days_to_birth",
@@ -326,18 +330,26 @@ names(data_subset_nn_normalized) <- c(
 ```
 
 
+```{r, echo=FALSE}
+# Removing missing values
+data_subset_nn_normalized <- data_subset_nn_normalized[complete.cases(data_subset_nn_normalized), ]
+```
+
+
+After making dummy variables for every categorical feature and normalizing each numerical feature, several instances with missing values were removed, therefore the total number of instances in the overall neural network dataset was 6916, before it was split into training and testing subsets. Prior to the removal of instances with missing values for the numerical features, there were a total of 12587 instances in the dataset.
+
 
 ```{r, echo=FALSE}
+# Splitting the normalized neural network dataset into training and testing subsets
 train_ind <- sample(seq_len(nrow(data_subset_nn_normalized)),
                     size = floor(0.7 * nrow(data_subset_nn_normalized)))
 
 train_nn <- data_subset_nn_normalized[train_ind,]
 test_nn <- data_subset_nn_normalized[-train_ind,]
-
-# Temporarily removing numeric variables
-train_nn <- subset(train_nn, select = -c(1:5))
-test_nn <- subset(test_nn, select = -c(1:5))
 ```
+
+
+It takes under 50 minutes to generate the neural network model, trained using the training subset. It could probably be sped up using services such as Great Lakes, etc.
 
 
 ```{r, echo=FALSE}
@@ -346,19 +358,20 @@ test_nn <- subset(test_nn, select = -c(1:5))
 ## (http://uc-r.github.io/ann_classification)
 
 # Making the neural network model
-start <- Sys.time()
-nn <- neuralnet(vital_status_Alive ~ project_id_BEATAML1.0_COHORT + project_id_BEATAML1.0_CRENOLANIB + project_id_CGCI_BLGSP + project_id_GENIE_DFCI + project_id_GENIE_JHU + project_id_GENIE_MDA + project_id_GENIE_MSK + project_id_GENIE_UHN + project_id_GENIE_VICC + project_id_MMRF_COMMPASS +  project_id_OHSU_CNL + project_id_TARGET_ALL_P1 + project_id_TARGET_ALL_P2 + project_id_TARGET_ALL_P3 + project_id_TARGET_AML + project_id_TARGET_NBL + project_id_TCGA_LAML + ethnicity_hispanic + ethnicity_not_hispanic + gender_female + gender_male + race_ameri_ind_or_alaska + race_asian +  race_black_or_afr_ameri + race_hawaiian_or_pacific_islander + race_other + race_white + iss_stage_I + iss_stage_II + iss_stage_III + site_of_resection_or_biopsy_Abdomen_NOS + site_of_resection_or_biopsy_Blood + site_of_resection_or_biopsy_Bone_marrow + site_of_resection_or_biopsy_Bones_of_skull_and_face + site_of_resection_or_biopsy_Cheek_mucosa + site_of_resection_or_biopsy_Connective_and_other_soft_tissues + site_of_resection_or_biopsy_Connective_and_other_soft_tissues_NOS + site_of_resection_or_biopsy_Head_face_or_neck_NOS + site_of_resection_or_biopsy_Hematopoietic_system_NOS + site_of_resection_or_biopsy_Intra_abdominal_lymph_nodes + site_of_resection_or_biopsy_Kidney_NOS + site_of_resection_or_biopsy_Lip_NOS + site_of_resection_or_biopsy_Liver + site_of_resection_or_biopsy_Lower_gum + site_of_resection_or_biopsy_Lymph_nodes_of_head_face_neck + site_of_resection_or_biopsy_Mandible + site_of_resection_or_biopsy_Mouth_NOS + site_of_resection_or_biopsy_Ovary + site_of_resection_or_biopsy_Pelvis_NOS + site_of_resection_or_biopsy_Peritoneum_NOS + site_of_resection_or_biopsy_Retroperitoneum + site_of_resection_or_biopsy_Small_intestine_NOS + site_of_resection_or_biopsy_Specified_parts_of_peritoneum + site_of_resection_or_biopsy_Spleen + site_of_resection_or_biopsy_Testis_NOS + site_of_resection_or_biopsy_Vestibule_of_mouth + tissue_or_organ_of_origin_Bone_marrow + tissue_or_organ_of_origin_Bones_of_skull_and_face + tissue_or_organ_of_origin_Hematopoietic_system_NOS + tissue_or_organ_of_origin_Orbit_NOS,
+# start <- Sys.time()     <== for timing the neural network model generation
+nn <- neuralnet(vital_status_Alive ~ age_at_index + days_to_birth + age_at_diagnosis + days_to_last_follow_up + days_to_last_known_disease_status + project_id_BEATAML1.0_COHORT + project_id_BEATAML1.0_CRENOLANIB + project_id_CGCI_BLGSP + project_id_GENIE_DFCI + project_id_GENIE_JHU + project_id_GENIE_MDA + project_id_GENIE_MSK + project_id_GENIE_UHN + project_id_GENIE_VICC + project_id_MMRF_COMMPASS +  project_id_OHSU_CNL + project_id_TARGET_ALL_P1 + project_id_TARGET_ALL_P2 + project_id_TARGET_ALL_P3 + project_id_TARGET_AML + project_id_TARGET_NBL + project_id_TCGA_LAML + ethnicity_hispanic + ethnicity_not_hispanic + gender_female + gender_male + race_ameri_ind_or_alaska + race_asian +  race_black_or_afr_ameri + race_hawaiian_or_pacific_islander + race_other + race_white + iss_stage_I + iss_stage_II + iss_stage_III + site_of_resection_or_biopsy_Abdomen_NOS + site_of_resection_or_biopsy_Blood + site_of_resection_or_biopsy_Bone_marrow + site_of_resection_or_biopsy_Bones_of_skull_and_face + site_of_resection_or_biopsy_Cheek_mucosa + site_of_resection_or_biopsy_Connective_and_other_soft_tissues + site_of_resection_or_biopsy_Connective_and_other_soft_tissues_NOS + site_of_resection_or_biopsy_Head_face_or_neck_NOS + site_of_resection_or_biopsy_Hematopoietic_system_NOS + site_of_resection_or_biopsy_Intra_abdominal_lymph_nodes + site_of_resection_or_biopsy_Kidney_NOS + site_of_resection_or_biopsy_Lip_NOS + site_of_resection_or_biopsy_Liver + site_of_resection_or_biopsy_Lower_gum + site_of_resection_or_biopsy_Lymph_nodes_of_head_face_neck + site_of_resection_or_biopsy_Mandible + site_of_resection_or_biopsy_Mouth_NOS + site_of_resection_or_biopsy_Ovary + site_of_resection_or_biopsy_Pelvis_NOS + site_of_resection_or_biopsy_Peritoneum_NOS + site_of_resection_or_biopsy_Retroperitoneum + site_of_resection_or_biopsy_Small_intestine_NOS + site_of_resection_or_biopsy_Specified_parts_of_peritoneum + site_of_resection_or_biopsy_Spleen + site_of_resection_or_biopsy_Testis_NOS + site_of_resection_or_biopsy_Vestibule_of_mouth + tissue_or_organ_of_origin_Bone_marrow + tissue_or_organ_of_origin_Bones_of_skull_and_face + tissue_or_organ_of_origin_Hematopoietic_system_NOS + tissue_or_organ_of_origin_Orbit_NOS,
                 data=train_nn,
                 hidden=c(50, 10),#c(50, 10),
                 linear.output=FALSE,
                 threshold=0.01)
-end <- Sys.time()
-end - start
+# end <- Sys.time()       <== for timing the neural network model generation
+# end - start             <== for timing the neural network model generation
 ```
 
 
 ```{r, echo=FALSE}
-# Plot to view neural network model, though pretty complicated given the number of nodes involved
+# Plot to view neural network model, though it is pretty complicated given the number of nodes involved in the input layer and the hidden layers
+
 # plot(nn)
 ```
 
