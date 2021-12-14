@@ -181,10 +181,21 @@ varImpPlot(rf2, main = "Importance of the Variables")
 
 ```{r, echo=FALSE}
 # Results:
-p1 <- predict(rf2, train_rf)
-confusionMatrix(p1, train_rf$vital_status)
-p2 <- predict(rf2, test_rf)
-confusionMatrix(p2, test_rf$vital_status)
+# p1 <- predict(rf2, train_rf)
+# p2 <- predict(rf2, test_rf)
+
+# Training set confusion matrix
+print("Training set confusion matrix and accuracies:")
+train_cm <- confusionMatrix(predict(rf2, train_rf), train_rf$vital_status)
+train_cm$table
+train_cm$overall
+cat("", sep="\n\n")
+
+# Testing set confusion matrix
+print("Testing set confusion matrix and accuracies:")
+test_cm <- confusionMatrix(predict(rf2, test_rf), test_rf$vital_status)
+test_cm$table
+test_cm$overall
 ```
 
 ### Neural Network
@@ -394,9 +405,17 @@ test_prediction <- c(test_prediction)
 test_actual <- test_nn$vital_status_Alive
 
 # Training set confusion matrix
-confusionMatrix(factor(train_prediction), factor(train_actual))
+print("Training set confusion matrix and accuracies:")
+train_cm <- confusionMatrix(factor(train_prediction), factor(train_actual))
+train_cm$table
+train_cm$overall
+cat("", sep="\n\n")
+
 # Testing set confusion matrix
-confusionMatrix(factor(test_prediction), factor(test_actual))
+print("Testing set confusion matrix and accuracies:")
+test_cm <- confusionMatrix(factor(test_prediction), factor(test_actual))
+test_cm$table
+test_cm$overall
 ```
 
 # Results
