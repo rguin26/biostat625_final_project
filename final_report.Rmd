@@ -422,10 +422,10 @@ test_cm$table
 test_cm$overall
 ```
 
-# Results
+# Results and Conclusion
 
+For the random forest algorithm with 20 trees, the accuracy of prediction for both the training set and testing set were more than 99.5%. The accuracy would still be above 99% if we changed the number of trees to 10. The perforamce of the prediction looked great, but such a high accuracy in both training set and testing set may indicate some potential problems when applying the same algorithm to a totally new dataset. So, we have to be cautious and re-train our model when we encounter a new set of bone marrow cancer data. 
 
-# Conclusion
 
 
 # Division of Work:
