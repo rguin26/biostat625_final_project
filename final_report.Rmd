@@ -139,7 +139,7 @@ data_imp <- mice(data2, m=5, method = "sample", printFlag = FALSE)
 
 We first conducted some survival analysis 
 
-```{r}
+```{r, echo=FALSE}
 
 ```
 
@@ -190,17 +190,16 @@ rf2 <- randomForest(vital_status ~ ., data=train_rf, na.action = na.omit, ntree 
 # p2 <- predict(rf2, test_rf)
 
 # Training set confusion matrix
-print("Training set confusion matrix and accuracies:")
+print("Training set accuracy:")
 train_cm <- confusionMatrix(predict(rf2, train_rf), train_rf$vital_status)
-train_cm$table
-train_cm$overall
+train_cm$overall[1]
 cat("", sep="\n\n")
 
 # Testing set confusion matrix
-print("Testing set confusion matrix and accuracies:")
+print("Testing set confusion matrix and accuracy:")
 test_cm <- confusionMatrix(predict(rf2, test_rf), test_rf$vital_status)
 test_cm$table
-test_cm$overall
+test_cm$overall[1]
 ```
 
 ### Neural Network
@@ -408,17 +407,16 @@ test_prediction <- c(test_prediction)
 test_actual <- test_nn$vital_status_Alive
 
 # Training set confusion matrix
-print("Training set confusion matrix and accuracies:")
-train_cm <- confusionMatrix(factor(train_prediction), factor(train_actual))
-train_cm$table
-train_cm$overall
+print("Training set accuracy:")
+train_cm <- confusionMatrix(predict(rf2, train_rf), train_rf$vital_status)
+train_cm$overall[1]
 cat("", sep="\n\n")
 
 # Testing set confusion matrix
-print("Testing set confusion matrix and accuracies:")
-test_cm <- confusionMatrix(factor(test_prediction), factor(test_actual))
+print("Testing set confusion matrix and accuracy:")
+test_cm <- confusionMatrix(predict(rf2, test_rf), test_rf$vital_status)
 test_cm$table
-test_cm$overall
+test_cm$overall[1]
 ```
 
 # Results and Conclusion
