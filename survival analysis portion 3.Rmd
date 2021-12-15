@@ -1,0 +1,224 @@
+---
+title: "Untitled"
+author: "Jorge Portugal"
+date: "12/1/2021"
+output: pdf_document
+---
+
+
+
+```{r setup, include=F}
+knitr::opts_chunk$set(echo = TRUE)
+library(survival)
+library(ranger)
+library(ggplot2)
+library(dplyr)
+library(ggfortify)
+library(survminer)
+library(caTools)
+set.seed(625)
+```
+
+
+```{r,echo=FALSE}
+data <- read.delim("C:/Users/J/Desktop/BIOS 625/project/clinical_bone.tsv.txt")
+
+data[data == "\'--"] <- "NULL"
+is.na(data) <- data == "NULL"
+data <- data[, colSums(is.na(data)) < nrow(data)]
+```
+
+
+```{r,echo=FALSE}
+##additional data prep
+data[data=="not reported"] <- NA
+data[data=="Not Reported"] <- NA
+data[data=="unknown"] <- NA
+data[data=="Unknown"] <- NA
+data[data=="not allowed to collect"] <- NA
+#summary(data)
+
+#names(data)
+data <- subset(data, select = -c(case_id, case_submitter_id))
+data <- transform(
+  data,
+  project_id=as.factor(project_id),
+  age_at_index=as.numeric(age_at_index),
+  age_is_obfuscated=as.factor(age_is_obfuscated),
+  cause_of_death=as.factor(cause_of_death),
+  days_to_birth=as.numeric(days_to_birth),
+  days_to_death=as.numeric(days_to_death),
+  ethnicity=as.factor(ethnicity),
+  gender=as.factor(gender),
+  race=as.factor(race),
+  vital_status=as.factor(vital_status),
+  year_of_birth=as.numeric(year_of_birth),
+  year_of_death=as.numeric(year_of_death),
+  age_at_diagnosis=as.numeric(age_at_diagnosis),
+  ann_arbor_b_symptoms=as.factor(ann_arbor_b_symptoms),
+  ann_arbor_extranodal_involvement=as.factor(ann_arbor_extranodal_involvement),
+  ann_arbor_pathologic_stage=as.factor(ann_arbor_pathologic_stage),
+  burkitt_lymphoma_clinical_variant=as.factor(burkitt_lymphoma_clinical_variant),
+  classification_of_tumor=as.factor(classification_of_tumor),
+  days_to_diagnosis=as.numeric(days_to_diagnosis),
+  days_to_last_follow_up=as.numeric(days_to_last_follow_up),
+  days_to_last_known_disease_status=as.numeric(days_to_last_known_disease_status),
+  inss_stage=as.numeric(inss_stage),
+  iss_stage=as.factor(iss_stage),
+  last_known_disease_status=as.factor(last_known_disease_status),
+  method_of_diagnosis=as.factor(method_of_diagnosis),
+  morphology=as.factor(morphology),
+  #primary_diagnosis=as.factor(primary_diagnosis),
+  prior_malignancy=as.factor(prior_malignancy),
+  prior_treatment=as.factor(prior_treatment),
+  progression_or_recurrence=as.factor(progression_or_recurrence),
+  #site_of_resection_or_biopsy=as.factor(site_of_resection_or_biopsy),
+  synchronous_malignancy=as.factor(synchronous_malignancy),
+  tissue_or_organ_of_origin=as.factor(tissue_or_organ_of_origin),
+  tumor_grade=as.factor(tumor_grade),
+  year_of_diagnosis=as.numeric(year_of_diagnosis),
+  days_to_treatment_end=as.numeric(days_to_treatment_end),
+  days_to_treatment_start=as.numeric(days_to_treatment_start),
+  initial_disease_status=as.factor(initial_disease_status),
+  number_of_cycles = as.factor(number_of_cycles),
+  regimen_or_line_of_therapy = as.factor(regimen_or_line_of_therapy),
+  therapeutic_agents=as.factor(therapeutic_agents),
+  treatment_anatomic_site=as.factor(treatment_anatomic_site),
+  treatment_dose=as.factor(treatment_dose),
+  treatment_intent_type=as.factor(treatment_intent_type),
+  treatment_or_therapy=as.factor(treatment_or_therapy),
+  treatment_outcome=as.factor(treatment_outcome),
+  treatment_type=as.factor(treatment_type)
+  )
+
+```
+
+```{r,echo=FALSE,warning=FALSE}
+#mainly just data prep
+rem <- colSums(is.na(data)) > 1000
+
+data$vital_status<-if_else(data$vital_status == "Alive",0,1)
+
+
+data$ethnicity<-droplevels(data$ethnicity)
+data$gender<-droplevels(data$gender)
+
+data$trueage<-round(data$age_at_diagnosis/365)
+data$agecat<-as.numeric(data$trueage)
+data$agecat[data$agecat >100 ]<-NA
+
+data$agecat[data$agecat>20&data$agecat<41]<-"21yo - 40yo"
+data$agecat[data$agecat>40&data$agecat<61]<-"41yo - 60yo yo"
+data$agecat[data$agecat>=0&data$agecat<21]<-"20yo or younger"
+data$agecat[data$agecat==3|data$agecat==4]<-"20yo or younger"
+data$agecat[data$agecat>60]<- "60+ yo"
+data$agecat<-as.factor(data$agecat)
+data$agecat<-droplevels(data$agecat)
+#table(data$agecat)
+
+data$race[data$race=="not allowed to collect"]<-NA
+data$race[data$race=="not reported"]<-NA
+data$race[data$race=="other"]<-NA
+data$race[data$race=="Unknown"]<-NA
+data$race[data$race=="american indian or alaska native"]<-NA
+data$race[data$race=="native hawaiian or other pacific islander"]<-NA
+data$race<-droplevels(data$race)
+
+data$primary_diagnosis[data$primary_diagnosis != "Acute myeloid leukemia, NOS" & data$primary_diagnosis != "Precursor B-cell lymphoblastic leukemia" & data$primary_diagnosis != "Multiple myeloma"]<-"Other"
+
+
+data$tissue_or_organ_of_origin[data$tissue_or_organ_of_origin != "Bone marrow" & data$tissue_or_organ_of_origin != "Hematopoietic system, NOS"]<- "Other"
+data$tissue_or_organ_of_origin<-droplevels(data$tissue_or_organ_of_origin)
+
+data$site_of_resection_or_biopsy[which(data$site_of_resection_or_biopsy != "Bone marrow")]= "Other"
+data$site_of_resection_or_biopsy<-as.factor(data$site_of_resection_or_biopsy)
+
+
+
+
+#data <- subset(data, select = -c(age_is_obfuscated, cause_of_death, days_to_death, year_of_birth, year_of_death, ann_arbor_b_symptoms, ann_arbor_extranodal_involvement, ann_arbor_pathologic_stage, burkitt_lymphoma_clinical_variant, classification_of_tumor, days_to_diagnosis, inss_stage, last_known_disease_status, method_of_diagnosis, prior_malignancy, prior_treatment, progression_or_recurrence, synchronous_malignancy, tumor_grade, year_of_diagnosis, days_to_treatment_end, days_to_treatment_start, initial_disease_status, number_of_cycles, regimen_or_line_of_therapy, therapeutic_agents, treatment_anatomic_site, treatment_dose, treatment_intent_type, treatment_or_therapy, treatment_outcome, treatment_type))
+#summary(data)
+
+#verifying no more missing values
+# table(data$vital_status)
+# 
+# table(data$ethnicity)
+# table(data$gender)
+# data$trueage<-round(data$age_at_diagnosis/365);table(data$trueage)
+# table(data$race)
+# table(data$tissue_or_organ_of_origin)
+# table(data$site_of_resection_or_biopsy)
+# table(data$primary_diagnosis)
+
+
+
+```
+# Analysis
+
+## (Exploratory) Survival Analysis
+
+
+For the first part of this project, we decided to do some exploratory survival analysis. However, due to the nature of how the data was collected, as well as how vastly incomplete the data was, some assumptions had to have been made. After looking at the dataset dictionary, the definition of the variable Vital Status is defined as “the survival state of the person registered on the protocol”. That is the only clear definition given out for that variable. As a result, we make the assumption that even though a patient’s info is censored, we consider them dead. 
+
+Additionally, our time event variable is “days to last follow-up” . We were recommended to go over the “days to death” variable and perhaps use that as our time event variable, but upon further examination, that variable had a large proportion of missing values and highly skewed the data. 
+
+Our main goal was to obtain results from machine learning methods. While the Survival Analysis portion may not follow the traditional guidelines (due to the vastly incompleteness of the dataset). It is mostly meant to be an exploratory analysis to give us and the readers a feel for the data at hand. 
+
+Initially, Kaplan-Meier plots were fit on the data for visualization purposes, the first plot other than the average survival rate for everyone drops to about 77% after 1000 days, but the dropoff levels off afterwards. For better visualization, KM plots were generated for gender and for primary disease diagnosis. From here, we can see that females have a higher survival rate than males; and that Precursor B-cell lymphoblastic leukemia was disease with the highest survival rate, whole Acute myeloid leukemia had the lowest survival rate for the entire time period
+
+
+
+```{r,fig.width=3,fig.height=3,echo=FALSE}
+#generating KM plots
+msurv<-survfit(Surv(days_to_last_follow_up,vital_status)~1, data = data)
+
+autoplot(msurv)
+##############
+msurv2<-survfit(Surv(days_to_last_follow_up,vital_status)~gender, data = data)
+
+autoplot(msurv2)
+##############
+msurv3<-survfit(Surv(days_to_last_follow_up,vital_status)~ ethnicity, data = data)
+
+#autoplot(msurv3)
+##############
+```
+
+```{r,fig.width=8,fig.height=5,echo=FALSE}
+msurv4<-survfit(Surv(days_to_last_follow_up,vital_status)~ primary_diagnosis, data = data)
+
+autoplot(msurv4)
+##############
+
+msurv5<-survfit(Surv(days_to_last_follow_up,vital_status)~ site_of_resection_or_biopsy, data = data)
+
+#autoplot(msurv5)
+##############
+msurv6<-survfit(Surv(days_to_last_follow_up,vital_status)~ agecat, data = data)
+
+#autoplot(msurv6)
+##############
+msurv7<-survfit(Surv(days_to_last_follow_up,vital_status)~ race, data = data)
+
+#autoplot(msurv7)
+
+#data$agecat[which(data$trueage<20)]<-"20 or lower"
+
+```
+
+Some of the more complete variables that had a relation to Vital Status were: age, gender, ethnicity, race, tissue or organ of origin, site of resection or biopsy, and primary disease diagnosis. Using these variables, A Cox proportional Hazards model was constructed to see the effect these variables had on Vital Status, as well as to check if said effects were significant. A forest plot was used to depict these results. From this forest plot, we can see that the most significant factors were: if the individual was a male (p-value <.001), if they were in the 41-60 age range (p-value <.001), if they were black/African-American (p-value =.014), if the site of resection or autopsy was anywhere other than bone marrow (p-value <.001), or if their primary disease diagnosis was Precursor B-cell lymphoblastic leukemia (p-value <.001). 
+
+```{r,echo = FALSE}
+
+##this is the cox model for further analysis. because we were running low on space, 
+cox<-coxph(formula=Surv(days_to_last_follow_up,vital_status)~ethnicity+gender+agecat+race+tissue_or_organ_of_origin+site_of_resection_or_biopsy+primary_diagnosis,data=data);#cox
+
+
+
+
+
+ggforest(cox, data = data)
+
+
+
+```
