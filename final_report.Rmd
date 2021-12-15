@@ -208,6 +208,7 @@ test_cm$overall
 # Neural Network:
 
 data_subset_nn <- complete(data_imp)
+# Remove variables that still have missing values
 data_subset_nn <- subset(data_subset_nn, select = -c(morphology, primary_diagnosis))
 ```
 
