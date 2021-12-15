@@ -7,13 +7,13 @@ output:
   html_document:
     toc: yes
     theme: united
-header-includes: \usepackage{setspace}\doublespacing
 author: Yitian Cai, Rudra Guin, Jorge Portugal
 date: "12/17/2021"
 fontsize: 12pt
 ---
 
 ```{r setup, include=FALSE}
+# header-includes: \usepackage{setspace}\doublespacing
 knitr::opts_chunk$set(echo = TRUE, warning = FALSE)
 ```
 
