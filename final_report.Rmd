@@ -249,7 +249,9 @@ ggforest(cox, data = data)
 
 We also performed some machine learning modeling and evaluated the effectiveness of the models' prediction power of the vital status of certain patients.
 
-### Random Forest
+### Models
+
+#### Random Forest
 
 After the missing values were imputed, we first tried to apply the random forest algorithm to that dataset. In order to fit the dataset into the model, we needed to remove categorical variables that had only one level since they were not suitable for random forest models. Then we ran the random forest algorithm using the training set that contains 70 percent of the original data, and we got the following plot.
 
@@ -299,7 +301,7 @@ train_rf_cm <- confusionMatrix(predict(rf2, train_rf), train_rf$vital_status)
 test_rf_cm <- confusionMatrix(predict(rf2, test_rf), test_rf$vital_status)
 ```
 
-### Neural Network
+#### Neural Network
 
 ```{r, echo=FALSE}
 # Neural Network:
