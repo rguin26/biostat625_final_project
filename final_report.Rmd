@@ -518,7 +518,6 @@ model_accuracies <- data.frame(
   "Training/Testing Set" = c(rep(c("Training", "Testing"), 2)),
   "Accuracy" = c(train_rf_cm$overall[1], test_rf_cm$overall[1], train_nn_cm$overall[1], test_nn_cm$overall[1])
 )
-# model_accuracies
 kable(model_accuracies)
 ```
 
