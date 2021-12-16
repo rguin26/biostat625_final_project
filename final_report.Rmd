@@ -9,7 +9,7 @@ output:
     theme: united
 author: Yitian Cai, Rudra Guin, Jorge Portugal
 date: "12/17/2021"
-fontsize: 12pt
+fontsize: 11pt
 ---
 
 ```{r setup, include=FALSE}
