@@ -536,7 +536,7 @@ test_nn_cm$table
 
 # Results and Conclusion
 
-For the random forest algorithm with 20 trees, the accuracy of prediction for both the training set and the testing set were more than 99.5%. The accuracy would still be above 99% if we changed the number of trees to 10. The performance of the prediction looked great, but such a high accuracy in both the training set and testing set may indicate some potential problems when applying the same algorithm to a totally new dataset. So, we have to be cautious and re-train our model when we encounter a new set of bone marrow cancer data. 
+For the random forest algorithm with 20 trees, the accuracy of prediction for both the training set and the testing set were more than 99.5%. The accuracy would still be above 99% if we changed the number of trees to 10. The performance of the prediction looked great, but such a high accuracy in both the training set and testing set may indicate some potential inflexibility when applying the same model to a totally new dataset. So, we have to be cautious and re-train our model when we apply to a new set of bone marrow cancer data. 
 
 For the neural network model, with 2 hidden layers consisting of 50 nodes first and then 10 nodes, the accuracy of prediction for both the training set and the testing set were more than 97%. The results of this model is quite promising, as the neural network was able to make many accurate predictions, but they were slightly less than the results of the random forest model. But as mentioned with the previous model, such a high accuracy in both the training set and testing set may indicate problems when the same algorithm is applied to a completely different dataset. Hence, it may be ideal to re-train the model when we work a brand new bone marrow cancer data set.
 
@@ -544,7 +544,7 @@ Additionally, it takes under 50 minutes to generate the neural network model, tr
 
 # Division of Work:
 
-Yitian: worked on initial data preprocessing by transforming all variables into numeric or factor, then worked on data imputation and data cleaning, and finally implemented and evaluated the random forest model.
+Yitian: worked on initial data preprocessing by transforming all variables into numeric values or factors, then worked on data imputation and data cleaning, and finally implemented and evaluated the random forest model.
 
 Rudra: worked on initial data preprocessing by converting empty values to `NA`, then did further preprocessing of the data for the neural network model, and finally implemented and evaluated the neural network model.
 
