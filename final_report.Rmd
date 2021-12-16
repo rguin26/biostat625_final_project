@@ -44,6 +44,7 @@ library(ggplot2)
 library(dplyr)
 library(ggfortify)
 library(survminer)
+library(knitr)
 set.seed(625)
 ```
 
@@ -518,7 +519,7 @@ model_accuracies <- data.frame(
   "Accuracy" = c(train_rf_cm$overall[1], test_rf_cm$overall[1], train_nn_cm$overall[1], test_nn_cm$overall[1])
 )
 # model_accuracies
-knitr::kable(model_accuracies)
+kable(model_accuracies)
 ```
 
 ```{r, echo=FALSE}
