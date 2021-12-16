@@ -148,7 +148,8 @@ For the first part of this project, we decided to do some exploratory survival a
 
 Additionally, our time event variable is “days to last follow-up” . We were recommended to go over the “days to death” variable and perhaps use that as our time event variable, but upon further examination, that variable had a large proportion of missing values and highly skewed the data. 
 
-Our main goal was to obtain results from machine learning methods. While the Survival Analysis portion may not follow the traditional guidelines (due to the vastly incompleteness of the dataset). It is mostly meant to be an exploratory analysis to give us and the readers a feel for the data at hand.  
+Our main goal was to obtain results from machine learning methods. While the Survival Analysis portion may not follow the traditional guidelines (due to the vastly incompleteness of the dataset). It is mostly meant to be an exploratory analysis to give us and the readers a feel for the data at hand.
+
 ```{r,echo=FALSE,warning=FALSE}
 #mainly just data prep
 rem <- colSums(is.na(data)) > 1000
