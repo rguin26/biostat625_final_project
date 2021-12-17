@@ -241,11 +241,6 @@ ggforest(cox, data = data)
 ```
 
 
-
-```{r, echo=FALSE}
-
-```
-
 ## Machine Learning Modeling and Analysis
 
 We also performed some machine learning modeling and evaluated the effectiveness of the models' prediction power of the vital status of certain patients.
@@ -292,14 +287,14 @@ rf2 <- randomForest(vital_status ~ ., data=train_rf, na.action = na.omit, ntree 
 
 ```{r, echo=FALSE}
 # Results:
-# p1 <- predict(rf2, train_rf)
-# p2 <- predict(rf2, test_rf)
+p1 <- predict(rf2, train_rf)
+p2 <- predict(rf2, test_rf)
 
 # Training set confusion matrix info
-train_rf_cm <- confusionMatrix(predict(rf2, train_rf), train_rf$vital_status)
+train_rf_cm <- confusionMatrix(p1, train_rf$vital_status)
 
 # Testing set confusion matrix info
-test_rf_cm <- confusionMatrix(predict(rf2, test_rf), test_rf$vital_status)
+test_rf_cm <- confusionMatrix(p2, test_rf$vital_status)
 ```
 
 #### Neural Network
@@ -472,11 +467,11 @@ test_nn <- data_subset_nn_normalized[-train_ind,]
 
 # Making the neural network model
 # start <- Sys.time()     #<== for timing the neural network model generation
-# nn <- neuralnet(vital_status_Alive ~ age_at_index + days_to_birth + age_at_diagnosis + days_to_last_follow_up + days_to_last_known_disease_status + project_id_BEATAML1.0_COHORT + project_id_BEATAML1.0_CRENOLANIB + project_id_CGCI_BLGSP + project_id_GENIE_DFCI + project_id_GENIE_JHU + project_id_GENIE_MDA + project_id_GENIE_MSK + project_id_GENIE_UHN + project_id_GENIE_VICC + project_id_MMRF_COMMPASS +  project_id_OHSU_CNL + project_id_TARGET_ALL_P1 + project_id_TARGET_ALL_P2 + project_id_TARGET_ALL_P3 + project_id_TARGET_AML + project_id_TARGET_NBL + project_id_TCGA_LAML + ethnicity_hispanic + ethnicity_not_hispanic + gender_female + gender_male + race_ameri_ind_or_alaska + race_asian +  race_black_or_afr_ameri + race_hawaiian_or_pacific_islander + race_other + race_white + iss_stage_I + iss_stage_II + iss_stage_III + site_of_resection_or_biopsy_Abdomen_NOS + site_of_resection_or_biopsy_Blood + site_of_resection_or_biopsy_Bone_marrow + site_of_resection_or_biopsy_Bones_of_skull_and_face + site_of_resection_or_biopsy_Cheek_mucosa + site_of_resection_or_biopsy_Connective_and_other_soft_tissues + site_of_resection_or_biopsy_Connective_and_other_soft_tissues_NOS + site_of_resection_or_biopsy_Intra_abdominal_lymph_nodes + site_of_resection_or_biopsy_Kidney_NOS + site_of_resection_or_biopsy_Lip_NOS + site_of_resection_or_biopsy_Liver + site_of_resection_or_biopsy_Lower_gum + site_of_resection_or_biopsy_Lymph_nodes_of_head_face_neck + site_of_resection_or_biopsy_Mandible + site_of_resection_or_biopsy_Mouth_NOS + site_of_resection_or_biopsy_Ovary + site_of_resection_or_biopsy_Pelvis_NOS + site_of_resection_or_biopsy_Peritoneum_NOS + site_of_resection_or_biopsy_Retroperitoneum + site_of_resection_or_biopsy_Small_intestine_NOS + site_of_resection_or_biopsy_Specified_parts_of_peritoneum + site_of_resection_or_biopsy_Spleen + site_of_resection_or_biopsy_Testis_NOS + site_of_resection_or_biopsy_Vestibule_of_mouth + site_of_resection_or_biopsy_NA + tissue_or_organ_of_origin_Bone_marrow + tissue_or_organ_of_origin_Bones_of_skull_and_face + tissue_or_organ_of_origin_Hematopoietic_system_NOS + tissue_or_organ_of_origin_Orbit_NOS,
-#                 data=train_nn,
-#                 hidden=c(50, 10),#c(50, 10),
-#                 linear.output=FALSE,
-#                 threshold=0.01)
+nn <- neuralnet(vital_status_Alive ~ age_at_index + days_to_birth + age_at_diagnosis + days_to_last_follow_up + days_to_last_known_disease_status + project_id_BEATAML1.0_COHORT + project_id_BEATAML1.0_CRENOLANIB + project_id_CGCI_BLGSP + project_id_GENIE_DFCI + project_id_GENIE_JHU + project_id_GENIE_MDA + project_id_GENIE_MSK + project_id_GENIE_UHN + project_id_GENIE_VICC + project_id_MMRF_COMMPASS +  project_id_OHSU_CNL + project_id_TARGET_ALL_P1 + project_id_TARGET_ALL_P2 + project_id_TARGET_ALL_P3 + project_id_TARGET_AML + project_id_TARGET_NBL + project_id_TCGA_LAML + ethnicity_hispanic + ethnicity_not_hispanic + gender_female + gender_male + race_ameri_ind_or_alaska + race_asian +  race_black_or_afr_ameri + race_hawaiian_or_pacific_islander + race_other + race_white + iss_stage_I + iss_stage_II + iss_stage_III + site_of_resection_or_biopsy_Abdomen_NOS + site_of_resection_or_biopsy_Blood + site_of_resection_or_biopsy_Bone_marrow + site_of_resection_or_biopsy_Bones_of_skull_and_face + site_of_resection_or_biopsy_Cheek_mucosa + site_of_resection_or_biopsy_Connective_and_other_soft_tissues + site_of_resection_or_biopsy_Connective_and_other_soft_tissues_NOS + site_of_resection_or_biopsy_Intra_abdominal_lymph_nodes + site_of_resection_or_biopsy_Kidney_NOS + site_of_resection_or_biopsy_Lip_NOS + site_of_resection_or_biopsy_Liver + site_of_resection_or_biopsy_Lower_gum + site_of_resection_or_biopsy_Lymph_nodes_of_head_face_neck + site_of_resection_or_biopsy_Mandible + site_of_resection_or_biopsy_Mouth_NOS + site_of_resection_or_biopsy_Ovary + site_of_resection_or_biopsy_Pelvis_NOS + site_of_resection_or_biopsy_Peritoneum_NOS + site_of_resection_or_biopsy_Retroperitoneum + site_of_resection_or_biopsy_Small_intestine_NOS + site_of_resection_or_biopsy_Specified_parts_of_peritoneum + site_of_resection_or_biopsy_Spleen + site_of_resection_or_biopsy_Testis_NOS + site_of_resection_or_biopsy_Vestibule_of_mouth + site_of_resection_or_biopsy_NA + tissue_or_organ_of_origin_Bone_marrow + tissue_or_organ_of_origin_Bones_of_skull_and_face + tissue_or_organ_of_origin_Hematopoietic_system_NOS + tissue_or_organ_of_origin_Orbit_NOS,
+                data=train_nn,
+                hidden=c(50, 10),#c(50, 10),
+                linear.output=FALSE,
+                threshold=0.01)
 # end <- Sys.time()       #<== for timing the neural network model generation
 # end - start             #<== for timing the neural network model generation
 ```
@@ -490,25 +485,23 @@ test_nn <- data_subset_nn_normalized[-train_ind,]
 
 ```{r, echo=FALSE}
 # Evaluating the model's accuracy
-# prediction_threshold <- 0.5
-# train_prediction <- predict(nn, train_nn)
-# test_prediction <- predict(nn, test_nn)
-# 
-# train_prediction[train_prediction >= prediction_threshold] <- 1
-# train_prediction[train_prediction < prediction_threshold] <- 0
-# # train_prediction <- c(train_prediction)
-# train_actual <- train_nn$vital_status_Alive
-# 
-# test_prediction[test_prediction >= prediction_threshold] <- 1
-# test_prediction[test_prediction < prediction_threshold] <- 0
-# # test_prediction <- c(test_prediction)
-# test_actual <- test_nn$vital_status_Alive
-# 
-# # Training set confusion matrix info
-# train_nn_cm <- confusionMatrix(factor(train_prediction), factor(train_actual))
-# 
-# # Testing set confusion matrix info
-# test_nn_cm <- confusionMatrix(factor(test_prediction), factor(test_actual))
+prediction_threshold <- 0.5
+train_prediction <- predict(nn, train_nn)
+test_prediction <- predict(nn, test_nn)
+
+train_prediction[train_prediction >= prediction_threshold] <- 1
+train_prediction[train_prediction < prediction_threshold] <- 0
+train_actual <- train_nn$vital_status_Alive
+
+test_prediction[test_prediction >= prediction_threshold] <- 1
+test_prediction[test_prediction < prediction_threshold] <- 0
+test_actual <- test_nn$vital_status_Alive
+
+# Training set confusion matrix info
+train_nn_cm <- confusionMatrix(factor(train_prediction), factor(train_actual))
+
+# Testing set confusion matrix info
+test_nn_cm <- confusionMatrix(factor(test_prediction), factor(test_actual))
 ```
 
 ### Model Results
@@ -519,8 +512,8 @@ print("Model accuracies across training and testing sets:")
 model_accuracies <- data.frame(
   "Model" = c(rep("Random Forest", 2), rep("Neural Network", 2)),
   "Training/Testing Set" = c(rep(c("Training", "Testing"), 2)),
-  "Accuracy" = c(train_rf_cm$overall[1], test_rf_cm$overall[1], train_rf_cm$overall[1], test_rf_cm$overall[1])
-)# c(train_rf_cm$overall[1], test_rf_cm$overall[1], train_nn_cm$overall[1], test_nn_cm$overall[1])
+  "Accuracy" = c(train_rf_cm$overall[1], test_rf_cm$overall[1], train_nn_cm$overall[1], test_nn_cm$overall[1])
+)
 kable(model_accuracies)
 ```
 
@@ -532,8 +525,7 @@ cat("", sep="\n\n")
 
 # Neural Network
 print("Neural network testing set confusion matrix:")
-test_rf_cm$table
-# test_nn_cm$table
+test_nn_cm$table
 ```
 
 # Results and Conclusion
