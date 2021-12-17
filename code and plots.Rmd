@@ -5,7 +5,7 @@ output: pdf_document
 
 
 
-```{r setup, include=F}
+```{r setup, include=F, warning=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(survival)
 library(ranger)
@@ -18,7 +18,7 @@ set.seed(625)
 ```
 
 
-```{r,echo=FALSE}
+```{r, include=F, warning=FALSE}
 data <- read.delim("C:/Users/J/Desktop/BIOS 625/project/clinical_bone.tsv.txt")
 
 data[data == "\'--"] <- "NULL"
@@ -27,7 +27,7 @@ data <- data[, colSums(is.na(data)) < nrow(data)]
 ```
 
 
-```{r,echo=FALSE}
+```{r, include=F, warning=FALSE}
 ##additional data prep
 data[data=="not reported"] <- NA
 data[data=="Not Reported"] <- NA
