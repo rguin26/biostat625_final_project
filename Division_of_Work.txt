@@ -7,4 +7,4 @@ worked on data imputation and data cleaning, and finally implemented and evaluat
 Rudra: worked on initial data preprocessing by converting empty values to `NA`, then did further preprocessing
 of the data for the neural network model, and finally implemented and evaluated the neural network model.
 
-Jorge:
+Jorge: Additional data prep, survival analysis section, extra plots
