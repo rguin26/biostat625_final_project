@@ -190,7 +190,7 @@ data$tissue_or_organ_of_origin<-droplevels(data$tissue_or_organ_of_origin)
 data$site_of_resection_or_biopsy[which(data$site_of_resection_or_biopsy != "Bone marrow")]= "Other"
 data$site_of_resection_or_biopsy<-as.factor(data$site_of_resection_or_biopsy)
 ```
-Initially, Kaplan-Meier plots were fit on the data for visualization purposes, the first plot other than the average survival rate for everyone drops to about 77% after 1000 days, but the dropoff levels off afterwards. For better visualization, KM plots were generated for gender and for primary disease diagnosis. From here, we can see that females have a higher survival rate than males; and that Precursor B-cell lymphoblastic leukemia was disease with the highest survival rate, whole Acute myeloid leukemia had the lowest survival rate for the entire time period.
+Initially, Kaplan-Meier plots were fit on the data for visualization purposes, the first plot other than the average survival rate for everyone drops to about 77% after 1000 days, but the dropoff levels off afterwards. (Plot was ommited due to space constraints.For better visualization, KM plots were generated for gender and for primary disease diagnosis. From here, we can see that females have a higher survival rate than males; and that Precursor B-cell lymphoblastic leukemia was disease with the highest survival rate, whole Acute myeloid leukemia had the lowest survival rate for the entire time period.
 
 
 
@@ -198,7 +198,7 @@ Initially, Kaplan-Meier plots were fit on the data for visualization purposes, t
 #generating KM plots
 msurv<-survfit(Surv(days_to_last_follow_up,vital_status)~1, data = data)
 
-autoplot(msurv)
+#autoplot(msurv)
 ##############
 msurv2<-survfit(Surv(days_to_last_follow_up,vital_status)~gender, data = data)
 
