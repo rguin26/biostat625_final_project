@@ -194,7 +194,7 @@ Initially, Kaplan-Meier plots were fit on the data for visualization purposes, t
 
 
 
-```{r,fig.width=5,fig.height=3,echo=FALSE}
+```{r,fig.width=5,fig.height=2,echo=FALSE}
 #generating KM plots
 msurv<-survfit(Surv(days_to_last_follow_up,vital_status)~1, data = data)
 
@@ -210,7 +210,7 @@ msurv3<-survfit(Surv(days_to_last_follow_up,vital_status)~ ethnicity, data = dat
 ##############
 ```
 
-```{r,fig.width=7,fig.height=4,echo=FALSE}
+```{r,fig.width=7,fig.height=2,echo=FALSE}
 msurv4<-survfit(Surv(days_to_last_follow_up,vital_status)~ primary_diagnosis, data = data)
 
 autoplot(msurv4)
@@ -231,7 +231,7 @@ msurv7<-survfit(Surv(days_to_last_follow_up,vital_status)~ race, data = data)
 ```
 Some of the more complete variables that had a relation to Vital Status were: age, gender, ethnicity, race, tissue or organ of origin, site of resection or biopsy, and primary disease diagnosis. Using these variables, A Cox proportional Hazards model was constructed to see the effect these variables had on Vital Status, as well as to check if said effects were significant. A forest plot was used to depict these results. From this forest plot, we can see that the most significant factors were: if the individual was a male (p-value <.001), if they were in the 41-60 age range (p-value <.001), if they were black/African-American (p-value =.014), if the site of resection or autopsy was anywhere other than bone marrow (p-value <.001), or if their primary disease diagnosis was Precursor B-cell lymphoblastic leukemia (p-value <.001). 
 
-```{r,fig.width=5,fig.height=3,echo=FALSE}
+```{r,fig.width=5,fig.height=5,echo=FALSE}
 
 ##this is the cox model for further analysis. not included because we were running low on space, 
 cox<-coxph(formula=Surv(days_to_last_follow_up,vital_status)~ethnicity+gender+agecat+race+tissue_or_organ_of_origin+site_of_resection_or_biopsy+primary_diagnosis,data=data);#cox
@@ -275,7 +275,7 @@ rf <- randomForest(vital_status ~ ., data=train_rf, na.action = na.omit)
 ```
 
 
-```{r, echo=FALSE}
+```{r, fig.width=5, fig.height=3, echo=FALSE}
 # Plot to see the performance of different number of trees
 plot(rf, main = "Random Forest", xlim = range(0, 150))
 ```
@@ -472,11 +472,11 @@ test_nn <- data_subset_nn_normalized[-train_ind,]
 
 # Making the neural network model
 # start <- Sys.time()     #<== for timing the neural network model generation
-nn <- neuralnet(vital_status_Alive ~ age_at_index + days_to_birth + age_at_diagnosis + days_to_last_follow_up + days_to_last_known_disease_status + project_id_BEATAML1.0_COHORT + project_id_BEATAML1.0_CRENOLANIB + project_id_CGCI_BLGSP + project_id_GENIE_DFCI + project_id_GENIE_JHU + project_id_GENIE_MDA + project_id_GENIE_MSK + project_id_GENIE_UHN + project_id_GENIE_VICC + project_id_MMRF_COMMPASS +  project_id_OHSU_CNL + project_id_TARGET_ALL_P1 + project_id_TARGET_ALL_P2 + project_id_TARGET_ALL_P3 + project_id_TARGET_AML + project_id_TARGET_NBL + project_id_TCGA_LAML + ethnicity_hispanic + ethnicity_not_hispanic + gender_female + gender_male + race_ameri_ind_or_alaska + race_asian +  race_black_or_afr_ameri + race_hawaiian_or_pacific_islander + race_other + race_white + iss_stage_I + iss_stage_II + iss_stage_III + site_of_resection_or_biopsy_Abdomen_NOS + site_of_resection_or_biopsy_Blood + site_of_resection_or_biopsy_Bone_marrow + site_of_resection_or_biopsy_Bones_of_skull_and_face + site_of_resection_or_biopsy_Cheek_mucosa + site_of_resection_or_biopsy_Connective_and_other_soft_tissues + site_of_resection_or_biopsy_Connective_and_other_soft_tissues_NOS + site_of_resection_or_biopsy_Intra_abdominal_lymph_nodes + site_of_resection_or_biopsy_Kidney_NOS + site_of_resection_or_biopsy_Lip_NOS + site_of_resection_or_biopsy_Liver + site_of_resection_or_biopsy_Lower_gum + site_of_resection_or_biopsy_Lymph_nodes_of_head_face_neck + site_of_resection_or_biopsy_Mandible + site_of_resection_or_biopsy_Mouth_NOS + site_of_resection_or_biopsy_Ovary + site_of_resection_or_biopsy_Pelvis_NOS + site_of_resection_or_biopsy_Peritoneum_NOS + site_of_resection_or_biopsy_Retroperitoneum + site_of_resection_or_biopsy_Small_intestine_NOS + site_of_resection_or_biopsy_Specified_parts_of_peritoneum + site_of_resection_or_biopsy_Spleen + site_of_resection_or_biopsy_Testis_NOS + site_of_resection_or_biopsy_Vestibule_of_mouth + site_of_resection_or_biopsy_NA + tissue_or_organ_of_origin_Bone_marrow + tissue_or_organ_of_origin_Bones_of_skull_and_face + tissue_or_organ_of_origin_Hematopoietic_system_NOS + tissue_or_organ_of_origin_Orbit_NOS,
-                data=train_nn,
-                hidden=c(50, 10),#c(50, 10),
-                linear.output=FALSE,
-                threshold=0.01)
+# nn <- neuralnet(vital_status_Alive ~ age_at_index + days_to_birth + age_at_diagnosis + days_to_last_follow_up + days_to_last_known_disease_status + project_id_BEATAML1.0_COHORT + project_id_BEATAML1.0_CRENOLANIB + project_id_CGCI_BLGSP + project_id_GENIE_DFCI + project_id_GENIE_JHU + project_id_GENIE_MDA + project_id_GENIE_MSK + project_id_GENIE_UHN + project_id_GENIE_VICC + project_id_MMRF_COMMPASS +  project_id_OHSU_CNL + project_id_TARGET_ALL_P1 + project_id_TARGET_ALL_P2 + project_id_TARGET_ALL_P3 + project_id_TARGET_AML + project_id_TARGET_NBL + project_id_TCGA_LAML + ethnicity_hispanic + ethnicity_not_hispanic + gender_female + gender_male + race_ameri_ind_or_alaska + race_asian +  race_black_or_afr_ameri + race_hawaiian_or_pacific_islander + race_other + race_white + iss_stage_I + iss_stage_II + iss_stage_III + site_of_resection_or_biopsy_Abdomen_NOS + site_of_resection_or_biopsy_Blood + site_of_resection_or_biopsy_Bone_marrow + site_of_resection_or_biopsy_Bones_of_skull_and_face + site_of_resection_or_biopsy_Cheek_mucosa + site_of_resection_or_biopsy_Connective_and_other_soft_tissues + site_of_resection_or_biopsy_Connective_and_other_soft_tissues_NOS + site_of_resection_or_biopsy_Intra_abdominal_lymph_nodes + site_of_resection_or_biopsy_Kidney_NOS + site_of_resection_or_biopsy_Lip_NOS + site_of_resection_or_biopsy_Liver + site_of_resection_or_biopsy_Lower_gum + site_of_resection_or_biopsy_Lymph_nodes_of_head_face_neck + site_of_resection_or_biopsy_Mandible + site_of_resection_or_biopsy_Mouth_NOS + site_of_resection_or_biopsy_Ovary + site_of_resection_or_biopsy_Pelvis_NOS + site_of_resection_or_biopsy_Peritoneum_NOS + site_of_resection_or_biopsy_Retroperitoneum + site_of_resection_or_biopsy_Small_intestine_NOS + site_of_resection_or_biopsy_Specified_parts_of_peritoneum + site_of_resection_or_biopsy_Spleen + site_of_resection_or_biopsy_Testis_NOS + site_of_resection_or_biopsy_Vestibule_of_mouth + site_of_resection_or_biopsy_NA + tissue_or_organ_of_origin_Bone_marrow + tissue_or_organ_of_origin_Bones_of_skull_and_face + tissue_or_organ_of_origin_Hematopoietic_system_NOS + tissue_or_organ_of_origin_Orbit_NOS,
+#                 data=train_nn,
+#                 hidden=c(50, 10),#c(50, 10),
+#                 linear.output=FALSE,
+#                 threshold=0.01)
 # end <- Sys.time()       #<== for timing the neural network model generation
 # end - start             #<== for timing the neural network model generation
 ```
@@ -490,25 +490,25 @@ nn <- neuralnet(vital_status_Alive ~ age_at_index + days_to_birth + age_at_diagn
 
 ```{r, echo=FALSE}
 # Evaluating the model's accuracy
-prediction_threshold <- 0.5
-train_prediction <- predict(nn, train_nn)
-test_prediction <- predict(nn, test_nn)
-
-train_prediction[train_prediction >= prediction_threshold] <- 1
-train_prediction[train_prediction < prediction_threshold] <- 0
-# train_prediction <- c(train_prediction)
-train_actual <- train_nn$vital_status_Alive
-
-test_prediction[test_prediction >= prediction_threshold] <- 1
-test_prediction[test_prediction < prediction_threshold] <- 0
-# test_prediction <- c(test_prediction)
-test_actual <- test_nn$vital_status_Alive
-
-# Training set confusion matrix info
-train_nn_cm <- confusionMatrix(factor(train_prediction), factor(train_actual))
-
-# Testing set confusion matrix info
-test_nn_cm <- confusionMatrix(factor(test_prediction), factor(test_actual))
+# prediction_threshold <- 0.5
+# train_prediction <- predict(nn, train_nn)
+# test_prediction <- predict(nn, test_nn)
+# 
+# train_prediction[train_prediction >= prediction_threshold] <- 1
+# train_prediction[train_prediction < prediction_threshold] <- 0
+# # train_prediction <- c(train_prediction)
+# train_actual <- train_nn$vital_status_Alive
+# 
+# test_prediction[test_prediction >= prediction_threshold] <- 1
+# test_prediction[test_prediction < prediction_threshold] <- 0
+# # test_prediction <- c(test_prediction)
+# test_actual <- test_nn$vital_status_Alive
+# 
+# # Training set confusion matrix info
+# train_nn_cm <- confusionMatrix(factor(train_prediction), factor(train_actual))
+# 
+# # Testing set confusion matrix info
+# test_nn_cm <- confusionMatrix(factor(test_prediction), factor(test_actual))
 ```
 
 ### Model Results
@@ -519,8 +519,8 @@ print("Model accuracies across training and testing sets:")
 model_accuracies <- data.frame(
   "Model" = c(rep("Random Forest", 2), rep("Neural Network", 2)),
   "Training/Testing Set" = c(rep(c("Training", "Testing"), 2)),
-  "Accuracy" = c(train_rf_cm$overall[1], test_rf_cm$overall[1], train_nn_cm$overall[1], test_nn_cm$overall[1])
-)
+  "Accuracy" = c(train_rf_cm$overall[1], test_rf_cm$overall[1], train_rf_cm$overall[1], test_rf_cm$overall[1])
+)# c(train_rf_cm$overall[1], test_rf_cm$overall[1], train_nn_cm$overall[1], test_nn_cm$overall[1])
 kable(model_accuracies)
 ```
 
@@ -532,7 +532,8 @@ cat("", sep="\n\n")
 
 # Neural Network
 print("Neural network testing set confusion matrix:")
-test_nn_cm$table
+test_rf_cm$table
+# test_nn_cm$table
 ```
 
 # Results and Conclusion
@@ -541,10 +542,3 @@ For the random forest algorithm with 20 trees, the accuracy of prediction for bo
 
 Additionally, it takes under 50 minutes to generate the neural network model, trained using the training subset. It could probably be sped up using cloud computing services such as Great Lakes, AWS, etc.
 
-# Division of Work:
-
-Yitian: worked on initial data preprocessing by transforming all variables into numeric values or factors, then worked on data imputation and data cleaning, and finally implemented and evaluated the random forest model.
-
-Rudra: worked on initial data preprocessing by converting empty values to `NA`, then did further preprocessing of the data for the neural network model, and finally implemented and evaluated the neural network model.
-
-Jorge:

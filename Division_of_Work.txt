@@ -1,0 +1,10 @@
+Division of Work:
+
+
+Yitian: worked on initial data preprocessing by transforming all variables into numeric values or factors, then
+worked on data imputation and data cleaning, and finally implemented and evaluated the random forest model.
+
+Rudra: worked on initial data preprocessing by converting empty values to `NA`, then did further preprocessing
+of the data for the neural network model, and finally implemented and evaluated the neural network model.
+
+Jorge:
