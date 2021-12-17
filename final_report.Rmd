@@ -194,7 +194,7 @@ Initially, Kaplan-Meier plots were fit on the data for visualization purposes, t
 
 
 
-```{r,fig.width=3,fig.height=3,echo=FALSE}
+```{r,fig.width=5,fig.height=3,echo=FALSE}
 #generating KM plots
 msurv<-survfit(Surv(days_to_last_follow_up,vital_status)~1, data = data)
 
@@ -210,7 +210,7 @@ msurv3<-survfit(Surv(days_to_last_follow_up,vital_status)~ ethnicity, data = dat
 ##############
 ```
 
-```{r,fig.width=8,fig.height=5,echo=FALSE}
+```{r,fig.width=7,fig.height=4,echo=FALSE}
 msurv4<-survfit(Surv(days_to_last_follow_up,vital_status)~ primary_diagnosis, data = data)
 
 autoplot(msurv4)
@@ -231,7 +231,7 @@ msurv7<-survfit(Surv(days_to_last_follow_up,vital_status)~ race, data = data)
 ```
 Some of the more complete variables that had a relation to Vital Status were: age, gender, ethnicity, race, tissue or organ of origin, site of resection or biopsy, and primary disease diagnosis. Using these variables, A Cox proportional Hazards model was constructed to see the effect these variables had on Vital Status, as well as to check if said effects were significant. A forest plot was used to depict these results. From this forest plot, we can see that the most significant factors were: if the individual was a male (p-value <.001), if they were in the 41-60 age range (p-value <.001), if they were black/African-American (p-value =.014), if the site of resection or autopsy was anywhere other than bone marrow (p-value <.001), or if their primary disease diagnosis was Precursor B-cell lymphoblastic leukemia (p-value <.001). 
 
-```{r,echo = FALSE}
+```{r,fig.width=5,fig.height=3,echo=FALSE}
 
 ##this is the cox model for further analysis. not included because we were running low on space, 
 cox<-coxph(formula=Surv(days_to_last_follow_up,vital_status)~ethnicity+gender+agecat+race+tissue_or_organ_of_origin+site_of_resection_or_biopsy+primary_diagnosis,data=data);#cox
